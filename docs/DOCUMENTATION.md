@@ -328,3 +328,32 @@ SpeechToText/
 ### Files Modified
 - `SpeechToText/App/SpeechToTextApp.swift` — added SpeechCoordinator, notification setup
 - `SpeechToText/App/AppDelegate.swift` — coordinator initialization and lifecycle
+
+---
+
+## Step 11: Error Handling and Edge Cases
+
+### What was implemented
+- Concurrent recording guard: prevents new recording while processing is in progress
+- Minimum file size check: recordings under 1KB (accidental taps) are silently discarded
+- `isProcessing` flag ensures single pipeline execution at a time
+
+### Error Notification Summary
+| Error | Notification Title | Behavior |
+|-------|-------------------|----------|
+| Missing OpenAI Key | "OpenAI API Key fehlt" | Opens Settings |
+| Missing Claude Key | "Claude API Key fehlt" | Pastes raw Whisper text |
+| Whisper API error | "Transkription fehlgeschlagen" | Shows error details |
+| Claude API error | "Textverbesserung fehlgeschlagen" | Pastes raw Whisper text |
+| No microphone permission | "Mikrofonzugriff verweigert" | System dialog triggered |
+| No accessibility permission | "Bedienungshilfen-Zugriff erforderlich" | Notification with instructions |
+| Recording failed | "Aufnahme fehlgeschlagen" | Shows error details |
+
+### Edge Cases Handled
+- Very short recording (< 1KB): silently ignored
+- Concurrent hotkey press during processing: blocked
+- Control key released without number key: no action
+- App termination: coordinator cleanup in `applicationWillTerminate`
+
+### Files Modified
+- `SpeechToText/App/SpeechToTextApp.swift` — added isProcessing guard, file size check

@@ -111,6 +111,7 @@
             <li><a href="#step8">Step 8: SettingsView</a></li>
             <li><a href="#step9">Step 9: Menu Bar UI</a></li>
             <li><a href="#step10">Step 10: Integration</a></li>
+            <li><a href="#step11">Step 11: Error Handling</a></li>
         </ul>
     </nav>
 
@@ -221,6 +222,33 @@
             <table>
                 <tr><th>File</th><th>Change</th></tr>
                 <tr><td><code>Core/HotkeyManager.swift</code></td><td>Full implementation with CGEventTap + delegate pattern</td></tr>
+            </table>
+        </section>
+
+        <section id="step11">
+            <h2>Step 11: Error Handling &amp; Edge Cases</h2>
+
+            <h3>What was implemented</h3>
+            <p>Concurrent recording guard, minimum file size check (< 1KB silently discarded), and comprehensive notification-based error reporting.</p>
+
+            <h3>Error Notifications</h3>
+            <table>
+                <tr><th>Error</th><th>Behavior</th></tr>
+                <tr><td>Missing OpenAI Key</td><td>Notification + opens Settings</td></tr>
+                <tr><td>Missing Claude Key</td><td>Notification + pastes raw text</td></tr>
+                <tr><td>Whisper API error</td><td>Notification with error details</td></tr>
+                <tr><td>Claude API error</td><td>Notification + pastes raw text</td></tr>
+                <tr><td>No mic permission</td><td>System dialog</td></tr>
+                <tr><td>No accessibility</td><td>Notification with instructions</td></tr>
+            </table>
+
+            <h3>Edge Cases</h3>
+            <table>
+                <tr><th>Case</th><th>Handling</th></tr>
+                <tr><td>Very short recording (< 1KB)</td><td>Silently ignored</td></tr>
+                <tr><td>Concurrent hotkey press</td><td>Blocked by isProcessing flag</td></tr>
+                <tr><td>Control release without number</td><td>No action</td></tr>
+                <tr><td>App termination</td><td>Coordinator cleanup</td></tr>
             </table>
         </section>
 

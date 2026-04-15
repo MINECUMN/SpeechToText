@@ -26,6 +26,7 @@ final class SpeechCoordinator: HotkeyManagerDelegate {
     private let pasteManager = PasteManager()
     private let settings = SettingsManager.shared
     private weak var appDelegate: AppDelegate?
+    private var isProcessing = false
 
     init(appDelegate: AppDelegate) {
         self.appDelegate = appDelegate
@@ -75,6 +76,9 @@ final class SpeechCoordinator: HotkeyManagerDelegate {
     // MARK: - HotkeyManagerDelegate
 
     func hotkeyManager(_ manager: HotkeyManager, didStartRecordingForMode mode: SpeechMode) {
+        // Guard against concurrent recording/processing
+        guard !isProcessing else { return }
+
         pasteManager.saveFrontmostApp()
         appDelegate?.setCurrentMode(mode)
         appDelegate?.updateState(.recording)
@@ -93,10 +97,20 @@ final class SpeechCoordinator: HotkeyManagerDelegate {
             return
         }
 
+        // Check minimum file size (very short recordings produce no useful audio)
+        let fileSize = (try? FileManager.default.attributesOfItem(atPath: audioURL.path)[.size] as? Int) ?? 0
+        if fileSize < 1000 {
+            audioRecorder.cleanup()
+            appDelegate?.updateState(mode == .standard ? .idleStandard : .idleSocialMedia)
+            return
+        }
+
+        isProcessing = true
         appDelegate?.updateState(.processingWhisper)
 
         Task {
             await processAudio(url: audioURL, mode: mode)
+            await MainActor.run { isProcessing = false }
         }
     }
 

@@ -22,7 +22,7 @@ Hold a hotkey, speak, release — your enhanced text gets pasted into the active
 - [x] Step 8: SettingsView (SwiftUI settings panel)
 - [x] Step 9: Menu Bar UI (NSStatusItem, icon states, dropdown menu)
 - [x] Step 10: Full integration (end-to-end flow working)
-- [ ] Step 11: Error handling
+- [x] Step 11: Error handling and edge cases
 - [ ] Step 12: Final documentation review
 
 ## Tech Stack
