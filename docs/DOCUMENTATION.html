@@ -104,6 +104,7 @@
             <li><a href="#step1">Step 1: Xcode Project</a></li>
             <li><a href="#step2">Step 2: HotkeyManager</a></li>
             <li><a href="#step3">Step 3: AudioRecorder</a></li>
+            <li><a href="#step4">Step 4: WhisperService</a></li>
         </ul>
     </nav>
 
@@ -214,6 +215,28 @@
             <table>
                 <tr><th>File</th><th>Change</th></tr>
                 <tr><td><code>Core/HotkeyManager.swift</code></td><td>Full implementation with CGEventTap + delegate pattern</td></tr>
+            </table>
+        </section>
+
+        <section id="step4">
+            <h2>Step 4: WhisperService</h2>
+
+            <h3>What was implemented</h3>
+            <p>OpenAI Whisper API integration via <code>URLSession</code> with multipart/form-data upload for audio transcription.</p>
+
+            <h3>API Configuration</h3>
+            <table>
+                <tr><th>Setting</th><th>Value</th></tr>
+                <tr><td>Endpoint</td><td><code>POST https://api.openai.com/v1/audio/transcriptions</code></td></tr>
+                <tr><td>Model</td><td><code>whisper-1</code></td></tr>
+                <tr><td>Auth</td><td><code>Bearer {API_KEY}</code></td></tr>
+                <tr><td>Response Format</td><td>Plain text</td></tr>
+            </table>
+
+            <h3>Files Modified</h3>
+            <table>
+                <tr><th>File</th><th>Change</th></tr>
+                <tr><td><code>Core/WhisperService.swift</code></td><td>Full implementation with multipart upload and error handling</td></tr>
             </table>
         </section>
 

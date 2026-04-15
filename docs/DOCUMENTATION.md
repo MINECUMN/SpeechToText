@@ -137,3 +137,26 @@ SpeechToText/
 
 ### Files Modified
 - `SpeechToText/Core/AudioRecorder.swift` — full implementation
+
+---
+
+## Step 4: WhisperService
+
+### What was implemented
+- OpenAI Whisper API integration via `URLSession` with multipart/form-data upload
+- Model: `whisper-1`
+- Response format: plain text
+- Configurable language parameter (default: "de", supports "auto" for auto-detect)
+- Custom error types: `WhisperError` with `.invalidResponse`, `.apiError`, `.emptyTranscription`
+
+### API Details
+| Setting | Value |
+|---------|-------|
+| Endpoint | `POST https://api.openai.com/v1/audio/transcriptions` |
+| Model | `whisper-1` |
+| Auth | `Bearer {API_KEY}` |
+| Content-Type | `multipart/form-data` |
+| Response Format | `text` |
+
+### Files Modified
+- `SpeechToText/Core/WhisperService.swift` — full implementation

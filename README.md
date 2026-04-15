@@ -15,7 +15,7 @@ Hold a hotkey, speak, release — your enhanced text gets pasted into the active
 - [x] Step 1: Xcode project structure (builds successfully)
 - [x] Step 2: HotkeyManager (global hotkeys via CGEventTap)
 - [x] Step 3: AudioRecorder (AVAudioRecorder, m4a 16kHz mono)
-- [ ] Step 4: WhisperService (OpenAI transcription)
+- [x] Step 4: WhisperService (OpenAI Whisper API)
 - [ ] Step 5: ClaudeService (AI text enhancement)
 - [ ] Step 6: PasteManager (auto-paste into active app)
 - [ ] Step 7: SettingsManager (Keychain + UserDefaults)
