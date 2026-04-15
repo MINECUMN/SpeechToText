@@ -103,6 +103,7 @@
             <li><a href="#step0">Step 0: GitHub Setup</a></li>
             <li><a href="#step1">Step 1: Xcode Project</a></li>
             <li><a href="#step2">Step 2: HotkeyManager</a></li>
+            <li><a href="#step3">Step 3: AudioRecorder</a></li>
         </ul>
     </nav>
 
@@ -213,6 +214,28 @@
             <table>
                 <tr><th>File</th><th>Change</th></tr>
                 <tr><td><code>Core/HotkeyManager.swift</code></td><td>Full implementation with CGEventTap + delegate pattern</td></tr>
+            </table>
+        </section>
+
+        <section id="step3">
+            <h2>Step 3: AudioRecorder</h2>
+
+            <h3>What was implemented</h3>
+            <p>Audio recording via <code>AVAudioRecorder</code> with Whisper-optimized settings (M4A, 16kHz, mono).</p>
+
+            <h3>Audio Settings</h3>
+            <table>
+                <tr><th>Setting</th><th>Value</th><th>Reason</th></tr>
+                <tr><td>Format</td><td>MPEG4 AAC (.m4a)</td><td>Whisper API accepts m4a</td></tr>
+                <tr><td>Sample Rate</td><td>16000 Hz</td><td>Whisper optimal input</td></tr>
+                <tr><td>Channels</td><td>1 (mono)</td><td>Speech only</td></tr>
+                <tr><td>Quality</td><td>High</td><td>Best accuracy</td></tr>
+            </table>
+
+            <h3>Files Modified</h3>
+            <table>
+                <tr><th>File</th><th>Change</th></tr>
+                <tr><td><code>Core/AudioRecorder.swift</code></td><td>Full implementation with permission handling and cleanup</td></tr>
             </table>
         </section>
     </main>

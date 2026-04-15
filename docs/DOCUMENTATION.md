@@ -115,3 +115,25 @@ SpeechToText/
 
 ### Files Modified
 - `SpeechToText/Core/HotkeyManager.swift` — full implementation
+
+---
+
+## Step 3: AudioRecorder
+
+### What was implemented
+- Audio recording via `AVAudioRecorder` with Whisper-optimized settings
+- Format: M4A (AAC), 16kHz sample rate, mono channel
+- Temp file storage in `NSTemporaryDirectory()` with UUID-based filenames
+- Permission request handling (macOS 14+ API with fallback)
+- Cleanup method to remove temp files after processing
+
+### Audio Settings
+| Setting | Value | Reason |
+|---------|-------|--------|
+| Format | MPEG4 AAC (.m4a) | Whisper API accepts m4a |
+| Sample Rate | 16000 Hz | Whisper optimal input rate |
+| Channels | 1 (mono) | Speech doesn't need stereo |
+| Quality | High | Best transcription accuracy |
+
+### Files Modified
+- `SpeechToText/Core/AudioRecorder.swift` — full implementation
