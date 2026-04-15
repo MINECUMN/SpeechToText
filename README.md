@@ -12,7 +12,7 @@ Hold a hotkey, speak, release — your enhanced text gets pasted into the active
 ## Current Status
 
 - [x] Step 0: GitHub repository created, initial structure committed
-- [ ] Step 1: Xcode project structure
+- [x] Step 1: Xcode project structure (builds successfully)
 - [ ] Step 2: HotkeyManager (global hotkeys)
 - [ ] Step 3: AudioRecorder (push-to-talk recording)
 - [ ] Step 4: WhisperService (OpenAI transcription)

@@ -101,6 +101,7 @@
         <h2>Table of Contents</h2>
         <ul>
             <li><a href="#step0">Step 0: GitHub Setup</a></li>
+            <li><a href="#step1">Step 1: Xcode Project</a></li>
         </ul>
     </nav>
 
@@ -141,6 +142,52 @@
 
             <h3>Dependencies</h3>
             <p>None yet — project structure only.</p>
+        </section>
+
+        <section id="step1">
+            <h2>Step 1: Xcode Project Structure</h2>
+
+            <h3>What was implemented</h3>
+            <p>Complete Xcode project with all source files, build settings, Info.plist, entitlements, and asset catalog. Build verified successfully.</p>
+
+            <h3>Swift Source Files</h3>
+            <table>
+                <tr><th>File</th><th>Location</th><th>Purpose</th></tr>
+                <tr><td><code>SpeechToTextApp.swift</code></td><td>App/</td><td>@main entry point with NSApplicationDelegateAdaptor</td></tr>
+                <tr><td><code>AppDelegate.swift</code></td><td>App/</td><td>Menu bar setup, settings window management</td></tr>
+                <tr><td><code>HotkeyManager.swift</code></td><td>Core/</td><td>Placeholder — global hotkey detection</td></tr>
+                <tr><td><code>AudioRecorder.swift</code></td><td>Core/</td><td>Placeholder — microphone recording</td></tr>
+                <tr><td><code>WhisperService.swift</code></td><td>Core/</td><td>Placeholder — OpenAI Whisper API</td></tr>
+                <tr><td><code>ClaudeService.swift</code></td><td>Core/</td><td>Placeholder — Anthropic Claude API</td></tr>
+                <tr><td><code>PasteManager.swift</code></td><td>Core/</td><td>Placeholder — text paste into active app</td></tr>
+                <tr><td><code>SettingsManager.swift</code></td><td>Settings/</td><td>Placeholder — Keychain + UserDefaults</td></tr>
+                <tr><td><code>SettingsView.swift</code></td><td>Settings/</td><td>Placeholder — SwiftUI settings panel</td></tr>
+            </table>
+
+            <h3>Info.plist Entries</h3>
+            <table>
+                <tr><th>Key</th><th>Value</th><th>Purpose</th></tr>
+                <tr><td><code>LSUIElement</code></td><td>YES</td><td>Menu bar only, no Dock icon</td></tr>
+                <tr><td><code>NSMicrophoneUsageDescription</code></td><td>Microphone access message</td><td>Permission dialog</td></tr>
+                <tr><td><code>NSAppleEventsUsageDescription</code></td><td>Apple Events access message</td><td>Paste into other apps</td></tr>
+            </table>
+
+            <h3>Entitlements</h3>
+            <table>
+                <tr><th>Key</th><th>Value</th><th>Purpose</th></tr>
+                <tr><td><code>com.apple.security.app-sandbox</code></td><td>NO</td><td>Required for CGEventTap</td></tr>
+                <tr><td><code>com.apple.security.device.audio-input</code></td><td>YES</td><td>Microphone recording</td></tr>
+                <tr><td><code>com.apple.security.hardened-runtime</code></td><td>YES</td><td>Security hardening</td></tr>
+            </table>
+
+            <h3>Build Configuration</h3>
+            <table>
+                <tr><th>Setting</th><th>Value</th></tr>
+                <tr><td>Bundle Identifier</td><td><code>tech.minec.SpeechToText</code></td></tr>
+                <tr><td>Swift Version</td><td>5.0</td></tr>
+                <tr><td>Deployment Target</td><td>macOS 13.0</td></tr>
+                <tr><td>Build Status</td><td>SUCCESS</td></tr>
+            </table>
         </section>
     </main>
 
