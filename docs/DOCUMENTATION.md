@@ -1,359 +1,217 @@
 # SpeechToText — Technical Documentation
 
-## Step 0: GitHub Repository Setup
+## Project Overview
 
-### What was implemented
-- Created public GitHub repository at https://github.com/MINECUMN/SpeechToText
-- Initialized with README.md, .gitignore (Swift/Xcode), MIT LICENSE
-- Created `docs/` folder for documentation
+Native macOS menu bar application providing push-to-talk speech-to-text with AI text enhancement.
 
-### Repository Structure
-```
-SpeechToText/
-├── .gitignore          # Swift/Xcode/macOS ignores
-├── LICENSE             # MIT License
-├── README.md           # Project overview and status
-└── docs/
-    ├── DOCUMENTATION.md    # This file — technical details
-    └── DOCUMENTATION.html  # HTML version of this documentation
-```
-
-### Configuration
-- Git user: MINECUMN
-- Git email: michael.netzig@minec.tech
-- Remote: https://github.com/MINECUMN/SpeechToText.git
-
-### Dependencies
-None yet — project structure only.
-
-### API Keys Required
-| Key | Service | Purpose |
-|-----|---------|---------|
-| OpenAI API Key | OpenAI Whisper API | Speech-to-text transcription |
-| Anthropic API Key | Claude API | AI text enhancement |
+**Repository:** https://github.com/MINECUMN/SpeechToText
+**Bundle ID:** `tech.minec.SpeechToText`
+**macOS Requirement:** 13.0 Ventura+
+**Xcode Requirement:** 15.0+
+**Swift Version:** 5.0+
 
 ---
 
-## Step 1: Xcode Project Structure
+## All Swift Files
 
-### What was implemented
-- Complete Xcode project (`SpeechToText.xcodeproj`) with proper build settings
-- All source file placeholders in correct folder structure
-- Info.plist with LSUIElement (menu bar only), microphone and Apple Events usage descriptions
-- Entitlements file with audio input and hardened runtime
-- Asset catalog with AppIcon placeholder
-- Bundle identifier: `tech.minec.SpeechToText`
-- Deployment target: macOS 13.0
+| File | Location | Purpose | Lines |
+|------|----------|---------|-------|
+| `SpeechToTextApp.swift` | App/ | @main entry point, SpeechCoordinator pipeline orchestration | 195 |
+| `AppDelegate.swift` | App/ | NSStatusItem menu bar, AppState icon management, settings window | 157 |
+| `HotkeyManager.swift` | Core/ | CGEventTap for Ctrl+1/Ctrl+2 push-to-talk detection | 131 |
+| `AudioRecorder.swift` | Core/ | AVAudioRecorder M4A 16kHz mono, temp file management | 52 |
+| `WhisperService.swift` | Core/ | OpenAI Whisper API multipart upload, transcription | 86 |
+| `ClaudeService.swift` | Core/ | Anthropic Claude API, Standard + Social Media modes | 89 |
+| `PasteManager.swift` | Core/ | Focus preservation, NSPasteboard, CGEventPost Cmd+V | 41 |
+| `SettingsManager.swift` | Settings/ | Singleton, Keychain API keys, UserDefaults, SMAppService | 129 |
+| `SettingsView.swift` | Settings/ | SwiftUI settings panel with all configuration options | 205 |
 
-### Project Structure
-```
-SpeechToText/
-├── SpeechToText.xcodeproj/
-│   └── project.pbxproj
-└── SpeechToText/
-    ├── App/
-    │   ├── SpeechToTextApp.swift      # @main entry point with NSApplicationDelegateAdaptor
-    │   └── AppDelegate.swift          # Menu bar setup, settings window management
-    ├── Core/
-    │   ├── HotkeyManager.swift        # Placeholder
-    │   ├── AudioRecorder.swift        # Placeholder
-    │   ├── WhisperService.swift       # Placeholder
-    │   ├── ClaudeService.swift        # Placeholder
-    │   └── PasteManager.swift         # Placeholder
-    ├── Settings/
-    │   ├── SettingsManager.swift      # Placeholder
-    │   └── SettingsView.swift         # Placeholder SwiftUI view
-    ├── Assets.xcassets/
-    │   ├── Contents.json
-    │   └── AppIcon.appiconset/
-    ├── Info.plist
-    └── SpeechToText.entitlements
-```
-
-### Info.plist Entries
-| Key | Value | Purpose |
-|-----|-------|---------|
-| LSUIElement | YES | Hide from Dock, menu bar only |
-| NSMicrophoneUsageDescription | "SpeechToText needs microphone access..." | Microphone permission dialog |
-| NSAppleEventsUsageDescription | "SpeechToText needs Apple Events access..." | Paste into other apps |
-
-### Entitlements
-| Key | Value | Purpose |
-|-----|-------|---------|
-| com.apple.security.app-sandbox | NO | Required for CGEventTap and global hotkeys |
-| com.apple.security.device.audio-input | YES | Microphone recording |
-| com.apple.security.hardened-runtime | YES | Security hardening |
-
-### Build Configuration
-- Swift version: 5.0
-- macOS deployment target: 13.0
-- Hardened runtime: enabled
-- Code signing: automatic
-- Build verified: **SUCCESS**
+**Total:** 1,085 lines of Swift code across 9 files.
 
 ---
 
-## Step 2: HotkeyManager
+## APIs Used
 
-### What was implemented
-- Global hotkey detection via `CGEventTap` (requires Accessibility permission)
-- Push-to-talk pattern: key down starts recording, key up/control release stops recording
-- Configurable key codes (default: Control+1 = Standard, Control+2 = Social Media)
-- Delegate protocol (`HotkeyManagerDelegate`) for recording start/stop events
-- Auto-re-enable on tap timeout/user disable
+### OpenAI Whisper API
 
-### Key Technical Details
-- Uses `CGEvent.tapCreate` with `cgSessionEventTap` placement
-- Monitors `.keyDown`, `.keyUp`, and `.flagsChanged` events
-- Control key release also triggers stop (via `.flagsChanged`)
-- Free-function callback bridges to class via `Unmanaged` pointer
-- `SpeechMode` enum: `.standard` and `.socialMedia`
-
-### Permissions Required
-- **Accessibility**: System Preferences → Privacy & Security → Accessibility → SpeechToText must be enabled
-- Without this permission, `CGEvent.tapCreate` returns `nil`
-
-### Files Modified
-- `SpeechToText/Core/HotkeyManager.swift` — full implementation
-
----
-
-## Step 3: AudioRecorder
-
-### What was implemented
-- Audio recording via `AVAudioRecorder` with Whisper-optimized settings
-- Format: M4A (AAC), 16kHz sample rate, mono channel
-- Temp file storage in `NSTemporaryDirectory()` with UUID-based filenames
-- Permission request handling (macOS 14+ API with fallback)
-- Cleanup method to remove temp files after processing
-
-### Audio Settings
-| Setting | Value | Reason |
-|---------|-------|--------|
-| Format | MPEG4 AAC (.m4a) | Whisper API accepts m4a |
-| Sample Rate | 16000 Hz | Whisper optimal input rate |
-| Channels | 1 (mono) | Speech doesn't need stereo |
-| Quality | High | Best transcription accuracy |
-
-### Files Modified
-- `SpeechToText/Core/AudioRecorder.swift` — full implementation
-
----
-
-## Step 4: WhisperService
-
-### What was implemented
-- OpenAI Whisper API integration via `URLSession` with multipart/form-data upload
-- Model: `whisper-1`
-- Response format: plain text
-- Configurable language parameter (default: "de", supports "auto" for auto-detect)
-- Custom error types: `WhisperError` with `.invalidResponse`, `.apiError`, `.emptyTranscription`
-
-### API Details
 | Setting | Value |
 |---------|-------|
 | Endpoint | `POST https://api.openai.com/v1/audio/transcriptions` |
 | Model | `whisper-1` |
-| Auth | `Bearer {API_KEY}` |
+| Auth | `Authorization: Bearer {OPENAI_API_KEY}` |
 | Content-Type | `multipart/form-data` |
-| Response Format | `text` |
+| Response Format | `text` (plain text) |
+| Fields | `model`, `file`, `language` (optional), `response_format` |
 
-### Files Modified
-- `SpeechToText/Core/WhisperService.swift` — full implementation
+### Anthropic Claude API
 
----
-
-## Step 5: ClaudeService
-
-### What was implemented
-- Anthropic Claude API integration with two text enhancement modes
-- Model: `claude-haiku-4-5-20251001` (fast, cost-effective)
-- Standard Mode: grammar cleanup, filler word removal, readability improvement
-- Social Media Mode: same cleanup + configurable emoji count injected naturally
-- Both modes auto-detect input language (German/English)
-
-### API Details
 | Setting | Value |
 |---------|-------|
 | Endpoint | `POST https://api.anthropic.com/v1/messages` |
 | Model | `claude-haiku-4-5-20251001` |
 | Max Tokens | 1024 |
-| API Version | `2023-06-01` |
-| Auth Header | `x-api-key: {API_KEY}` |
+| Auth | `x-api-key: {ANTHROPIC_API_KEY}` |
+| API Version | `anthropic-version: 2023-06-01` |
+| Content-Type | `application/json` |
 
-### System Prompts
-- **Standard**: Clean grammar, improve flow, remove filler words, preserve meaning and language
-- **Social Media**: Same as standard + add exactly N emojis naturally, make engaging for social media
+**Standard Mode System Prompt:** Clean grammar, improve flow, remove filler words, preserve meaning and language.
 
-### Files Modified
-- `SpeechToText/Core/ClaudeService.swift` — full implementation
+**Social Media Mode System Prompt:** Same as standard + add exactly N emojis naturally, make engaging.
 
 ---
 
-## Step 6: PasteManager
+## API Keys
 
-### What was implemented
-- Saves the frontmost application before recording starts
-- After processing: sets `NSPasteboard` with enhanced text
-- Re-activates the previously focused app
-- Simulates Cmd+V via `CGEventPost` to paste text
-- 150ms delay between app activation and paste for reliability
+| Key Name | Service | How to obtain |
+|----------|---------|---------------|
+| OpenAI API Key | OpenAI Whisper API | platform.openai.com/api-keys |
+| Anthropic API Key | Claude API | console.anthropic.com |
 
-### Key Technical Details
-- `NSWorkspace.shared.frontmostApplication` captures current app before recording
-- `CGEvent` with virtual key `0x09` (V key) + `.maskCommand` flag
-- Posts to `.cghidEventTap` for system-wide paste simulation
-
-### Files Modified
-- `SpeechToText/Core/PasteManager.swift` — full implementation
+**Storage:** Both keys are stored in macOS Keychain with separate service identifiers:
+- `tech.minec.SpeechToText.openai`
+- `tech.minec.SpeechToText.claude`
 
 ---
 
-## Step 7: SettingsManager
+## Permissions Required
 
-### What was implemented
-- Singleton pattern (`SettingsManager.shared`) with `ObservableObject` for SwiftUI binding
-- API keys stored in macOS Keychain (separate service IDs for OpenAI and Claude)
-- User preferences stored in UserDefaults with `@Published` properties
-- Launch at Login via `SMAppService` (macOS 13+)
-
-### Storage Details
-| Setting | Storage | Key/Service |
-|---------|---------|-------------|
-| OpenAI API Key | Keychain | `tech.minec.SpeechToText.openai` |
-| Claude API Key | Keychain | `tech.minec.SpeechToText.claude` |
-| Language | UserDefaults | `stt_language` (default: "de") |
-| Emoji Count | UserDefaults | `stt_emojiCount` (default: 3) |
-| Launch at Login | UserDefaults + SMAppService | `stt_launchAtLogin` |
-| Standard Hotkey | UserDefaults | `stt_standardHotkey` (default: "Control+1") |
-| Social Media Hotkey | UserDefaults | `stt_socialMediaHotkey` (default: "Control+2") |
-
-### Frameworks Used
-- `Security` — Keychain read/write/delete
-- `ServiceManagement` — SMAppService for launch at login
-
-### Files Modified
-- `SpeechToText/Settings/SettingsManager.swift` — full implementation
+| Permission | Framework | Purpose |
+|------------|-----------|---------|
+| Microphone | AVFoundation | Audio recording |
+| Accessibility | ApplicationServices (CGEventTap) | Global hotkey monitoring |
+| Notifications | UserNotifications | Error and status notifications |
 
 ---
 
-## Step 8: SettingsView
+## Info.plist Entries
 
-### What was implemented
-- SwiftUI settings panel (450x520) with all configuration options
-- API Keys section: masked SecureField with eye toggle, Save button, Keychain status indicator
-- Hotkeys section: displays current hotkey labels (read-only display)
-- Language section: segmented picker (Auto / Deutsch / English)
-- Social Media section: emoji count slider (1–20) with live label
-- General section: Launch at Login toggle
-- All settings bound to SettingsManager via `@ObservedObject`
-
-### UI Sections
-| Section | Controls |
-|---------|----------|
-| API Keys | 2x SecureField + eye toggle + Save button + status |
-| Hotkeys | Read-only display of Control+1 / Control+2 |
-| Language | Segmented Picker: auto, de, en |
-| Social Media | Slider 1–20 for emoji count |
-| General | Toggle: Launch at Login |
-
-### Files Modified
-- `SpeechToText/Settings/SettingsView.swift` — full implementation
+| Key | Value | Purpose |
+|-----|-------|---------|
+| `LSUIElement` | `YES` | Menu bar only, no Dock icon |
+| `NSMicrophoneUsageDescription` | "SpeechToText needs microphone access to record your voice for transcription." | Microphone permission dialog |
+| `NSAppleEventsUsageDescription` | "SpeechToText needs Apple Events access to paste text into other applications." | Apple Events permission |
 
 ---
 
-## Step 9: Menu Bar UI
+## Entitlements
 
-### What was implemented
-- Complete AppDelegate rewrite with `NSStatusItem` and dynamic icon states
-- `AppState` enum: `.idleStandard`, `.idleSocialMedia`, `.recording`, `.processingWhisper`, `.processingClaude`
-- Menu dropdown: mode selection with checkmarks, Settings, Quit
-- Icon changes per state: neutral mic, red mic (recording), ellipsis (Whisper), sparkles (Claude)
-- Mode selection via menu or hotkey (preparation for Step 10)
-
-### Menu Bar Icon States
-| State | Icon | Title |
-|-------|------|-------|
-| Idle Standard | `mic` (SF Symbol) | — |
-| Idle Social Media | `mic` (SF Symbol) | phone emoji |
-| Recording | `mic.fill` red tinted | — |
-| Processing Whisper | `ellipsis.circle` | "..." |
-| Processing Claude | `sparkles` | sparkles |
-
-### Menu Items
-1. Standard Mode (^1) — with checkmark
-2. Social Media Mode (^2) — with checkmark
-3. ---
-4. Settings... (Cmd+,)
-5. ---
-6. Quit (Cmd+Q)
-
-### Files Modified
-- `SpeechToText/App/AppDelegate.swift` — complete rewrite with state management
+| Key | Value | Purpose |
+|-----|-------|---------|
+| `com.apple.security.app-sandbox` | `NO` | Required for CGEventTap (global hotkeys) |
+| `com.apple.security.device.audio-input` | `YES` | Microphone access |
+| `com.apple.security.hardened-runtime` | `YES` | Security hardening |
 
 ---
 
-## Step 10: Full Integration
+## Frameworks Used
 
-### What was implemented
-- `SpeechCoordinator` class wires all components together
-- Complete end-to-end flow: Hotkey → Record → Whisper → Claude → Paste
-- Coordinator initialized in `AppDelegate.applicationDidFinishLaunching`
-- First-run check: auto-opens Settings if API keys are missing
-- Ready notification on startup with hotkey instructions
-- Microphone permission request on startup
-- Accessibility permission check (for CGEventTap)
+| Framework | Purpose |
+|-----------|---------|
+| SwiftUI | Settings panel UI |
+| AppKit (Cocoa) | NSStatusItem, NSMenu, NSPasteboard, NSWorkspace |
+| AVFoundation | AVAudioRecorder for audio capture |
+| Carbon.HIToolbox | Virtual key codes (kVK_ANSI_1, kVK_ANSI_2) |
+| Security | Keychain read/write/delete |
+| ServiceManagement | SMAppService for launch at login |
+| UserNotifications | UNUserNotificationCenter for error notifications |
+| ApplicationServices | CGEventTap, CGEventPost for hotkeys and paste simulation |
 
-### End-to-End Flow
+---
+
+## UserDefaults Keys
+
+| Key | Type | Default | Purpose |
+|-----|------|---------|---------|
+| `stt_language` | String | "de" | Whisper language code |
+| `stt_emojiCount` | Int | 3 | Emoji count for Social Media mode |
+| `stt_launchAtLogin` | Bool | false | Auto-start with macOS |
+| `stt_standardHotkey` | String | "Control+1" | Display label |
+| `stt_socialMediaHotkey` | String | "Control+2" | Display label |
+
+---
+
+## End-to-End Pipeline Flow
+
+```
 1. User holds Control+1 or Control+2
-2. `HotkeyManager` detects key down → calls `SpeechCoordinator.didStartRecording`
-3. `PasteManager.saveFrontmostApp()` captures current app
-4. `AudioRecorder.startRecording()` begins recording
-5. Menu bar icon → red mic (recording state)
-6. User releases key → `didStopRecording`
-7. `AudioRecorder.stopRecording()` returns audio file URL
-8. Menu bar icon → "..." (Whisper processing)
-9. `WhisperService.transcribe()` sends audio to OpenAI API
-10. Menu bar icon → sparkles (Claude processing)
-11. `ClaudeService.enhance()` sends text to Anthropic API
-12. `PasteManager.pasteText()` activates previous app and pastes via Cmd+V
-13. Menu bar icon → idle state
-
-### Fallback Behavior
-- Missing Claude key: paste raw Whisper transcription
-- Claude API error: paste raw Whisper transcription + notification
-- Missing OpenAI key: notification + open Settings
-- Whisper error: notification only
-
-### Files Modified
-- `SpeechToText/App/SpeechToTextApp.swift` — added SpeechCoordinator, notification setup
-- `SpeechToText/App/AppDelegate.swift` — coordinator initialization and lifecycle
+2. HotkeyManager detects keyDown → SpeechCoordinator.didStartRecording(mode:)
+3. PasteManager.saveFrontmostApp() captures current app
+4. AudioRecorder.startRecording() begins M4A recording
+5. Menu bar → red mic icon
+6. User releases key → SpeechCoordinator.didStopRecording(mode:)
+7. AudioRecorder.stopRecording() returns file URL
+8. File size check (< 1KB = silently discard)
+9. Menu bar → "..." (Whisper processing)
+10. WhisperService.transcribe() → OpenAI API
+11. Menu bar → sparkles (Claude processing)
+12. ClaudeService.enhance() → Anthropic API
+13. PasteManager.pasteText() → re-activate app → NSPasteboard → Cmd+V
+14. Menu bar → idle state
+15. AudioRecorder.cleanup() removes temp file
+```
 
 ---
 
-## Step 11: Error Handling and Edge Cases
+## Error Handling
 
-### What was implemented
-- Concurrent recording guard: prevents new recording while processing is in progress
-- Minimum file size check: recordings under 1KB (accidental taps) are silently discarded
-- `isProcessing` flag ensures single pipeline execution at a time
+All errors are displayed via `UserNotifications` (no modal dialogs).
 
-### Error Notification Summary
-| Error | Notification Title | Behavior |
-|-------|-------------------|----------|
+| Error | Notification | Fallback |
+|-------|-------------|----------|
 | Missing OpenAI Key | "OpenAI API Key fehlt" | Opens Settings |
 | Missing Claude Key | "Claude API Key fehlt" | Pastes raw Whisper text |
-| Whisper API error | "Transkription fehlgeschlagen" | Shows error details |
+| Whisper API error | "Transkription fehlgeschlagen: [error]" | — |
 | Claude API error | "Textverbesserung fehlgeschlagen" | Pastes raw Whisper text |
-| No microphone permission | "Mikrofonzugriff verweigert" | System dialog triggered |
-| No accessibility permission | "Bedienungshilfen-Zugriff erforderlich" | Notification with instructions |
-| Recording failed | "Aufnahme fehlgeschlagen" | Shows error details |
+| No microphone permission | "Mikrofonzugriff verweigert" | — |
+| No accessibility permission | "Bedienungshilfen-Zugriff erforderlich" | — |
+| Recording failed | "Aufnahme fehlgeschlagen: [error]" | — |
 
-### Edge Cases Handled
-- Very short recording (< 1KB): silently ignored
-- Concurrent hotkey press during processing: blocked
-- Control key released without number key: no action
-- App termination: coordinator cleanup in `applicationWillTerminate`
+---
 
-### Files Modified
-- `SpeechToText/App/SpeechToTextApp.swift` — added isProcessing guard, file size check
+## Build Configuration
+
+| Setting | Value |
+|---------|-------|
+| Deployment Target | macOS 13.0 |
+| Swift Version | 5.0 |
+| Bundle Identifier | `tech.minec.SpeechToText` |
+| Code Signing | Automatic |
+| Hardened Runtime | Enabled |
+| App Sandbox | Disabled (required for CGEventTap) |
+
+---
+
+## How to Build and Run
+
+```bash
+git clone https://github.com/MINECUMN/SpeechToText.git
+cd SpeechToText
+open SpeechToText.xcodeproj
+# In Xcode: Cmd+R to build and run
+```
+
+Or via command line:
+```bash
+xcodebuild -project SpeechToText.xcodeproj -scheme SpeechToText -configuration Debug build
+```
+
+---
+
+## How to Export for Another Mac
+
+1. Open project in Xcode
+2. Product → Archive
+3. Distribute App → Copy App
+4. Copy `SpeechToText.app` to target Mac's `/Applications/`
+5. On first launch: grant Microphone + Accessibility permissions
+6. Open Settings → enter API keys
+
+---
+
+## Known Limitations
+
+- Hotkeys are hardcoded to Control+1 and Control+2
+- No audio level visualization during recording
+- Not sandboxed (CGEventTap requires it)
+- No offline mode (requires internet for both APIs)
+- Single pipeline: cannot start new recording while processing
