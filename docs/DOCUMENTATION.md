@@ -206,3 +206,31 @@ SpeechToText/
 
 ### Files Modified
 - `SpeechToText/Core/PasteManager.swift` — full implementation
+
+---
+
+## Step 7: SettingsManager
+
+### What was implemented
+- Singleton pattern (`SettingsManager.shared`) with `ObservableObject` for SwiftUI binding
+- API keys stored in macOS Keychain (separate service IDs for OpenAI and Claude)
+- User preferences stored in UserDefaults with `@Published` properties
+- Launch at Login via `SMAppService` (macOS 13+)
+
+### Storage Details
+| Setting | Storage | Key/Service |
+|---------|---------|-------------|
+| OpenAI API Key | Keychain | `tech.minec.SpeechToText.openai` |
+| Claude API Key | Keychain | `tech.minec.SpeechToText.claude` |
+| Language | UserDefaults | `stt_language` (default: "de") |
+| Emoji Count | UserDefaults | `stt_emojiCount` (default: 3) |
+| Launch at Login | UserDefaults + SMAppService | `stt_launchAtLogin` |
+| Standard Hotkey | UserDefaults | `stt_standardHotkey` (default: "Control+1") |
+| Social Media Hotkey | UserDefaults | `stt_socialMediaHotkey` (default: "Control+2") |
+
+### Frameworks Used
+- `Security` — Keychain read/write/delete
+- `ServiceManagement` — SMAppService for launch at login
+
+### Files Modified
+- `SpeechToText/Settings/SettingsManager.swift` — full implementation

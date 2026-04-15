@@ -18,7 +18,7 @@ Hold a hotkey, speak, release — your enhanced text gets pasted into the active
 - [x] Step 4: WhisperService (OpenAI Whisper API)
 - [x] Step 5: ClaudeService (Anthropic Claude API, both modes)
 - [x] Step 6: PasteManager (focus preservation + CGEventPost Cmd+V)
-- [ ] Step 7: SettingsManager (Keychain + UserDefaults)
+- [x] Step 7: SettingsManager (Keychain + UserDefaults + Launch at Login)
 - [ ] Step 8: SettingsView (SwiftUI settings panel)
 - [ ] Step 9: Menu Bar UI
 - [ ] Step 10: Full integration

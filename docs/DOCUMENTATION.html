@@ -107,6 +107,7 @@
             <li><a href="#step4">Step 4: WhisperService</a></li>
             <li><a href="#step5">Step 5: ClaudeService</a></li>
             <li><a href="#step6">Step 6: PasteManager</a></li>
+            <li><a href="#step7">Step 7: SettingsManager</a></li>
         </ul>
     </nav>
 
@@ -217,6 +218,29 @@
             <table>
                 <tr><th>File</th><th>Change</th></tr>
                 <tr><td><code>Core/HotkeyManager.swift</code></td><td>Full implementation with CGEventTap + delegate pattern</td></tr>
+            </table>
+        </section>
+
+        <section id="step7">
+            <h2>Step 7: SettingsManager</h2>
+
+            <h3>What was implemented</h3>
+            <p>Singleton with <code>ObservableObject</code> for SwiftUI. API keys in Keychain, preferences in UserDefaults, launch at login via SMAppService.</p>
+
+            <h3>Storage Map</h3>
+            <table>
+                <tr><th>Setting</th><th>Storage</th><th>Default</th></tr>
+                <tr><td>OpenAI API Key</td><td>Keychain</td><td>—</td></tr>
+                <tr><td>Claude API Key</td><td>Keychain</td><td>—</td></tr>
+                <tr><td>Language</td><td>UserDefaults</td><td>"de"</td></tr>
+                <tr><td>Emoji Count</td><td>UserDefaults</td><td>3</td></tr>
+                <tr><td>Launch at Login</td><td>UserDefaults + SMAppService</td><td>false</td></tr>
+            </table>
+
+            <h3>Files Modified</h3>
+            <table>
+                <tr><th>File</th><th>Change</th></tr>
+                <tr><td><code>Settings/SettingsManager.swift</code></td><td>Full implementation</td></tr>
             </table>
         </section>
 
