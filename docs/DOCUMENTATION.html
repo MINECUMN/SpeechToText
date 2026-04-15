@@ -108,6 +108,7 @@
             <li><a href="#step5">Step 5: ClaudeService</a></li>
             <li><a href="#step6">Step 6: PasteManager</a></li>
             <li><a href="#step7">Step 7: SettingsManager</a></li>
+            <li><a href="#step8">Step 8: SettingsView</a></li>
         </ul>
     </nav>
 
@@ -218,6 +219,29 @@
             <table>
                 <tr><th>File</th><th>Change</th></tr>
                 <tr><td><code>Core/HotkeyManager.swift</code></td><td>Full implementation with CGEventTap + delegate pattern</td></tr>
+            </table>
+        </section>
+
+        <section id="step8">
+            <h2>Step 8: SettingsView</h2>
+
+            <h3>What was implemented</h3>
+            <p>Complete SwiftUI settings panel with API key management (masked input + Keychain storage), language picker, emoji slider, and launch at login toggle.</p>
+
+            <h3>UI Sections</h3>
+            <table>
+                <tr><th>Section</th><th>Controls</th></tr>
+                <tr><td>API Keys</td><td>SecureField + eye toggle + Save + Keychain status</td></tr>
+                <tr><td>Hotkeys</td><td>Read-only labels for Control+1 / Control+2</td></tr>
+                <tr><td>Language</td><td>Segmented Picker: Auto / Deutsch / English</td></tr>
+                <tr><td>Social Media</td><td>Emoji count slider (1–20)</td></tr>
+                <tr><td>General</td><td>Launch at Login toggle</td></tr>
+            </table>
+
+            <h3>Files Modified</h3>
+            <table>
+                <tr><th>File</th><th>Change</th></tr>
+                <tr><td><code>Settings/SettingsView.swift</code></td><td>Full SwiftUI implementation</td></tr>
             </table>
         </section>
 

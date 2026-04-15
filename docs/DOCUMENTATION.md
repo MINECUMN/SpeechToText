@@ -234,3 +234,28 @@ SpeechToText/
 
 ### Files Modified
 - `SpeechToText/Settings/SettingsManager.swift` — full implementation
+
+---
+
+## Step 8: SettingsView
+
+### What was implemented
+- SwiftUI settings panel (450x520) with all configuration options
+- API Keys section: masked SecureField with eye toggle, Save button, Keychain status indicator
+- Hotkeys section: displays current hotkey labels (read-only display)
+- Language section: segmented picker (Auto / Deutsch / English)
+- Social Media section: emoji count slider (1–20) with live label
+- General section: Launch at Login toggle
+- All settings bound to SettingsManager via `@ObservedObject`
+
+### UI Sections
+| Section | Controls |
+|---------|----------|
+| API Keys | 2x SecureField + eye toggle + Save button + status |
+| Hotkeys | Read-only display of Control+1 / Control+2 |
+| Language | Segmented Picker: auto, de, en |
+| Social Media | Slider 1–20 for emoji count |
+| General | Toggle: Launch at Login |
+
+### Files Modified
+- `SpeechToText/Settings/SettingsView.swift` — full implementation
