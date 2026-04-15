@@ -102,6 +102,7 @@
         <ul>
             <li><a href="#step0">Step 0: GitHub Setup</a></li>
             <li><a href="#step1">Step 1: Xcode Project</a></li>
+            <li><a href="#step2">Step 2: HotkeyManager</a></li>
         </ul>
     </nav>
 
@@ -187,6 +188,31 @@
                 <tr><td>Swift Version</td><td>5.0</td></tr>
                 <tr><td>Deployment Target</td><td>macOS 13.0</td></tr>
                 <tr><td>Build Status</td><td>SUCCESS</td></tr>
+            </table>
+        </section>
+
+        <section id="step2">
+            <h2>Step 2: HotkeyManager</h2>
+
+            <h3>What was implemented</h3>
+            <p>Global hotkey detection via <code>CGEventTap</code> with push-to-talk pattern. Control+1 triggers Standard Mode, Control+2 triggers Social Media Mode.</p>
+
+            <h3>Architecture</h3>
+            <table>
+                <tr><th>Component</th><th>Details</th></tr>
+                <tr><td>Event Tap</td><td><code>CGEvent.tapCreate</code> with <code>cgSessionEventTap</code></td></tr>
+                <tr><td>Events Monitored</td><td><code>.keyDown</code>, <code>.keyUp</code>, <code>.flagsChanged</code></td></tr>
+                <tr><td>Delegate Protocol</td><td><code>HotkeyManagerDelegate</code> — <code>didStartRecording</code> / <code>didStopRecording</code></td></tr>
+                <tr><td>Mode Enum</td><td><code>SpeechMode.standard</code>, <code>SpeechMode.socialMedia</code></td></tr>
+            </table>
+
+            <h3>Permissions</h3>
+            <p><strong>Accessibility permission required.</strong> System Preferences &rarr; Privacy &amp; Security &rarr; Accessibility &rarr; enable SpeechToText.</p>
+
+            <h3>Files Modified</h3>
+            <table>
+                <tr><th>File</th><th>Change</th></tr>
+                <tr><td><code>Core/HotkeyManager.swift</code></td><td>Full implementation with CGEventTap + delegate pattern</td></tr>
             </table>
         </section>
     </main>

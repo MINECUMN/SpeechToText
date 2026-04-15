@@ -13,7 +13,7 @@ Hold a hotkey, speak, release — your enhanced text gets pasted into the active
 
 - [x] Step 0: GitHub repository created, initial structure committed
 - [x] Step 1: Xcode project structure (builds successfully)
-- [ ] Step 2: HotkeyManager (global hotkeys)
+- [x] Step 2: HotkeyManager (global hotkeys via CGEventTap)
 - [ ] Step 3: AudioRecorder (push-to-talk recording)
 - [ ] Step 4: WhisperService (OpenAI transcription)
 - [ ] Step 5: ClaudeService (AI text enhancement)

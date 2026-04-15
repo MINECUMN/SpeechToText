@@ -90,3 +90,28 @@ SpeechToText/
 - Hardened runtime: enabled
 - Code signing: automatic
 - Build verified: **SUCCESS**
+
+---
+
+## Step 2: HotkeyManager
+
+### What was implemented
+- Global hotkey detection via `CGEventTap` (requires Accessibility permission)
+- Push-to-talk pattern: key down starts recording, key up/control release stops recording
+- Configurable key codes (default: Control+1 = Standard, Control+2 = Social Media)
+- Delegate protocol (`HotkeyManagerDelegate`) for recording start/stop events
+- Auto-re-enable on tap timeout/user disable
+
+### Key Technical Details
+- Uses `CGEvent.tapCreate` with `cgSessionEventTap` placement
+- Monitors `.keyDown`, `.keyUp`, and `.flagsChanged` events
+- Control key release also triggers stop (via `.flagsChanged`)
+- Free-function callback bridges to class via `Unmanaged` pointer
+- `SpeechMode` enum: `.standard` and `.socialMedia`
+
+### Permissions Required
+- **Accessibility**: System Preferences → Privacy & Security → Accessibility → SpeechToText must be enabled
+- Without this permission, `CGEvent.tapCreate` returns `nil`
+
+### Files Modified
+- `SpeechToText/Core/HotkeyManager.swift` — full implementation
