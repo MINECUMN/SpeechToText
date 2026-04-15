@@ -259,3 +259,34 @@ SpeechToText/
 
 ### Files Modified
 - `SpeechToText/Settings/SettingsView.swift` — full implementation
+
+---
+
+## Step 9: Menu Bar UI
+
+### What was implemented
+- Complete AppDelegate rewrite with `NSStatusItem` and dynamic icon states
+- `AppState` enum: `.idleStandard`, `.idleSocialMedia`, `.recording`, `.processingWhisper`, `.processingClaude`
+- Menu dropdown: mode selection with checkmarks, Settings, Quit
+- Icon changes per state: neutral mic, red mic (recording), ellipsis (Whisper), sparkles (Claude)
+- Mode selection via menu or hotkey (preparation for Step 10)
+
+### Menu Bar Icon States
+| State | Icon | Title |
+|-------|------|-------|
+| Idle Standard | `mic` (SF Symbol) | — |
+| Idle Social Media | `mic` (SF Symbol) | phone emoji |
+| Recording | `mic.fill` red tinted | — |
+| Processing Whisper | `ellipsis.circle` | "..." |
+| Processing Claude | `sparkles` | sparkles |
+
+### Menu Items
+1. Standard Mode (^1) — with checkmark
+2. Social Media Mode (^2) — with checkmark
+3. ---
+4. Settings... (Cmd+,)
+5. ---
+6. Quit (Cmd+Q)
+
+### Files Modified
+- `SpeechToText/App/AppDelegate.swift` — complete rewrite with state management

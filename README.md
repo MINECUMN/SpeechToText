@@ -20,7 +20,7 @@ Hold a hotkey, speak, release — your enhanced text gets pasted into the active
 - [x] Step 6: PasteManager (focus preservation + CGEventPost Cmd+V)
 - [x] Step 7: SettingsManager (Keychain + UserDefaults + Launch at Login)
 - [x] Step 8: SettingsView (SwiftUI settings panel)
-- [ ] Step 9: Menu Bar UI
+- [x] Step 9: Menu Bar UI (NSStatusItem, icon states, dropdown menu)
 - [ ] Step 10: Full integration
 - [ ] Step 11: Error handling
 - [ ] Step 12: Final documentation review
