@@ -187,3 +187,22 @@ SpeechToText/
 
 ### Files Modified
 - `SpeechToText/Core/ClaudeService.swift` — full implementation
+
+---
+
+## Step 6: PasteManager
+
+### What was implemented
+- Saves the frontmost application before recording starts
+- After processing: sets `NSPasteboard` with enhanced text
+- Re-activates the previously focused app
+- Simulates Cmd+V via `CGEventPost` to paste text
+- 150ms delay between app activation and paste for reliability
+
+### Key Technical Details
+- `NSWorkspace.shared.frontmostApplication` captures current app before recording
+- `CGEvent` with virtual key `0x09` (V key) + `.maskCommand` flag
+- Posts to `.cghidEventTap` for system-wide paste simulation
+
+### Files Modified
+- `SpeechToText/Core/PasteManager.swift` — full implementation

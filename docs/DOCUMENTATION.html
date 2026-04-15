@@ -106,6 +106,7 @@
             <li><a href="#step3">Step 3: AudioRecorder</a></li>
             <li><a href="#step4">Step 4: WhisperService</a></li>
             <li><a href="#step5">Step 5: ClaudeService</a></li>
+            <li><a href="#step6">Step 6: PasteManager</a></li>
         </ul>
     </nav>
 
@@ -216,6 +217,28 @@
             <table>
                 <tr><th>File</th><th>Change</th></tr>
                 <tr><td><code>Core/HotkeyManager.swift</code></td><td>Full implementation with CGEventTap + delegate pattern</td></tr>
+            </table>
+        </section>
+
+        <section id="step6">
+            <h2>Step 6: PasteManager</h2>
+
+            <h3>What was implemented</h3>
+            <p>Focus preservation and auto-paste: saves frontmost app, sets clipboard, re-activates app, simulates Cmd+V.</p>
+
+            <h3>Technical Details</h3>
+            <table>
+                <tr><th>Component</th><th>Details</th></tr>
+                <tr><td>App Detection</td><td><code>NSWorkspace.shared.frontmostApplication</code></td></tr>
+                <tr><td>Clipboard</td><td><code>NSPasteboard.general</code></td></tr>
+                <tr><td>Paste Simulation</td><td><code>CGEvent</code> with key 0x09 (V) + <code>.maskCommand</code></td></tr>
+                <tr><td>Activation Delay</td><td>150ms before paste</td></tr>
+            </table>
+
+            <h3>Files Modified</h3>
+            <table>
+                <tr><th>File</th><th>Change</th></tr>
+                <tr><td><code>Core/PasteManager.swift</code></td><td>Full implementation</td></tr>
             </table>
         </section>
 
