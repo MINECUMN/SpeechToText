@@ -110,6 +110,7 @@
             <li><a href="#step7">Step 7: SettingsManager</a></li>
             <li><a href="#step8">Step 8: SettingsView</a></li>
             <li><a href="#step9">Step 9: Menu Bar UI</a></li>
+            <li><a href="#step10">Step 10: Integration</a></li>
         </ul>
     </nav>
 
@@ -220,6 +221,40 @@
             <table>
                 <tr><th>File</th><th>Change</th></tr>
                 <tr><td><code>Core/HotkeyManager.swift</code></td><td>Full implementation with CGEventTap + delegate pattern</td></tr>
+            </table>
+        </section>
+
+        <section id="step10">
+            <h2>Step 10: Full Integration</h2>
+
+            <h3>What was implemented</h3>
+            <p><code>SpeechCoordinator</code> wires all components together: Hotkey &rarr; Record &rarr; Whisper &rarr; Claude &rarr; Paste. First-run checks for API keys and permissions.</p>
+
+            <h3>End-to-End Flow</h3>
+            <table>
+                <tr><th>Step</th><th>Component</th><th>Action</th></tr>
+                <tr><td>1</td><td>HotkeyManager</td><td>Detect Control+1/2 key down</td></tr>
+                <tr><td>2</td><td>PasteManager</td><td>Save frontmost app</td></tr>
+                <tr><td>3</td><td>AudioRecorder</td><td>Start recording</td></tr>
+                <tr><td>4</td><td>HotkeyManager</td><td>Detect key release</td></tr>
+                <tr><td>5</td><td>WhisperService</td><td>Transcribe audio</td></tr>
+                <tr><td>6</td><td>ClaudeService</td><td>Enhance text</td></tr>
+                <tr><td>7</td><td>PasteManager</td><td>Re-activate app + Cmd+V</td></tr>
+            </table>
+
+            <h3>Fallback Behavior</h3>
+            <table>
+                <tr><th>Scenario</th><th>Action</th></tr>
+                <tr><td>Claude key missing</td><td>Paste raw transcription</td></tr>
+                <tr><td>Claude API error</td><td>Paste raw + notification</td></tr>
+                <tr><td>OpenAI key missing</td><td>Notification + open Settings</td></tr>
+            </table>
+
+            <h3>Files Modified</h3>
+            <table>
+                <tr><th>File</th><th>Change</th></tr>
+                <tr><td><code>App/SpeechToTextApp.swift</code></td><td>Added SpeechCoordinator</td></tr>
+                <tr><td><code>App/AppDelegate.swift</code></td><td>Coordinator lifecycle</td></tr>
             </table>
         </section>
 

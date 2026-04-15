@@ -14,6 +14,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private var settingsWindow: NSWindow?
     private var currentMode: SpeechMode = .standard
     private(set) var appState: AppState = .idleStandard
+    private var coordinator: SpeechCoordinator?
 
     // Menu items that need updating
     private var standardModeItem: NSMenuItem!
@@ -21,6 +22,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupMenuBar()
+        coordinator = SpeechCoordinator(appDelegate: self)
+        coordinator?.start()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        coordinator?.stop()
     }
 
     // MARK: - Menu Bar Setup

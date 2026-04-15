@@ -290,3 +290,41 @@ SpeechToText/
 
 ### Files Modified
 - `SpeechToText/App/AppDelegate.swift` — complete rewrite with state management
+
+---
+
+## Step 10: Full Integration
+
+### What was implemented
+- `SpeechCoordinator` class wires all components together
+- Complete end-to-end flow: Hotkey → Record → Whisper → Claude → Paste
+- Coordinator initialized in `AppDelegate.applicationDidFinishLaunching`
+- First-run check: auto-opens Settings if API keys are missing
+- Ready notification on startup with hotkey instructions
+- Microphone permission request on startup
+- Accessibility permission check (for CGEventTap)
+
+### End-to-End Flow
+1. User holds Control+1 or Control+2
+2. `HotkeyManager` detects key down → calls `SpeechCoordinator.didStartRecording`
+3. `PasteManager.saveFrontmostApp()` captures current app
+4. `AudioRecorder.startRecording()` begins recording
+5. Menu bar icon → red mic (recording state)
+6. User releases key → `didStopRecording`
+7. `AudioRecorder.stopRecording()` returns audio file URL
+8. Menu bar icon → "..." (Whisper processing)
+9. `WhisperService.transcribe()` sends audio to OpenAI API
+10. Menu bar icon → sparkles (Claude processing)
+11. `ClaudeService.enhance()` sends text to Anthropic API
+12. `PasteManager.pasteText()` activates previous app and pastes via Cmd+V
+13. Menu bar icon → idle state
+
+### Fallback Behavior
+- Missing Claude key: paste raw Whisper transcription
+- Claude API error: paste raw Whisper transcription + notification
+- Missing OpenAI key: notification + open Settings
+- Whisper error: notification only
+
+### Files Modified
+- `SpeechToText/App/SpeechToTextApp.swift` — added SpeechCoordinator, notification setup
+- `SpeechToText/App/AppDelegate.swift` — coordinator initialization and lifecycle
