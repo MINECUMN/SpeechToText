@@ -160,3 +160,30 @@ SpeechToText/
 
 ### Files Modified
 - `SpeechToText/Core/WhisperService.swift` — full implementation
+
+---
+
+## Step 5: ClaudeService
+
+### What was implemented
+- Anthropic Claude API integration with two text enhancement modes
+- Model: `claude-haiku-4-5-20251001` (fast, cost-effective)
+- Standard Mode: grammar cleanup, filler word removal, readability improvement
+- Social Media Mode: same cleanup + configurable emoji count injected naturally
+- Both modes auto-detect input language (German/English)
+
+### API Details
+| Setting | Value |
+|---------|-------|
+| Endpoint | `POST https://api.anthropic.com/v1/messages` |
+| Model | `claude-haiku-4-5-20251001` |
+| Max Tokens | 1024 |
+| API Version | `2023-06-01` |
+| Auth Header | `x-api-key: {API_KEY}` |
+
+### System Prompts
+- **Standard**: Clean grammar, improve flow, remove filler words, preserve meaning and language
+- **Social Media**: Same as standard + add exactly N emojis naturally, make engaging for social media
+
+### Files Modified
+- `SpeechToText/Core/ClaudeService.swift` — full implementation

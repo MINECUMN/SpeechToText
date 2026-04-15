@@ -105,6 +105,7 @@
             <li><a href="#step2">Step 2: HotkeyManager</a></li>
             <li><a href="#step3">Step 3: AudioRecorder</a></li>
             <li><a href="#step4">Step 4: WhisperService</a></li>
+            <li><a href="#step5">Step 5: ClaudeService</a></li>
         </ul>
     </nav>
 
@@ -215,6 +216,36 @@
             <table>
                 <tr><th>File</th><th>Change</th></tr>
                 <tr><td><code>Core/HotkeyManager.swift</code></td><td>Full implementation with CGEventTap + delegate pattern</td></tr>
+            </table>
+        </section>
+
+        <section id="step5">
+            <h2>Step 5: ClaudeService</h2>
+
+            <h3>What was implemented</h3>
+            <p>Anthropic Claude API integration with two text enhancement modes: Standard (grammar cleanup) and Social Media (cleanup + emoji injection).</p>
+
+            <h3>API Configuration</h3>
+            <table>
+                <tr><th>Setting</th><th>Value</th></tr>
+                <tr><td>Endpoint</td><td><code>POST https://api.anthropic.com/v1/messages</code></td></tr>
+                <tr><td>Model</td><td><code>claude-haiku-4-5-20251001</code></td></tr>
+                <tr><td>Max Tokens</td><td>1024</td></tr>
+                <tr><td>API Version</td><td><code>2023-06-01</code></td></tr>
+                <tr><td>Auth</td><td><code>x-api-key: {API_KEY}</code></td></tr>
+            </table>
+
+            <h3>Modes</h3>
+            <table>
+                <tr><th>Mode</th><th>Behavior</th></tr>
+                <tr><td>Standard</td><td>Fix grammar, remove fillers, improve readability</td></tr>
+                <tr><td>Social Media</td><td>Same + add N emojis naturally, make engaging</td></tr>
+            </table>
+
+            <h3>Files Modified</h3>
+            <table>
+                <tr><th>File</th><th>Change</th></tr>
+                <tr><td><code>Core/ClaudeService.swift</code></td><td>Full implementation with both modes and error handling</td></tr>
             </table>
         </section>
 
