@@ -16,12 +16,12 @@ final class HotkeyManager {
 
     fileprivate var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
-    private var isRecording = false
-    private var activeMode: SpeechMode?
+    fileprivate var isRecording = false
+    fileprivate var activeMode: SpeechMode?
 
     // Configurable keycodes (default: 1 = kVK_ANSI_1, 2 = kVK_ANSI_2)
-    var standardKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_1)
-    var socialMediaKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_2)
+    fileprivate var standardKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_1)
+    fileprivate var socialMediaKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_2)
 
     func start() -> Bool {
         let eventMask: CGEventMask = (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue) | (1 << CGEventType.flagsChanged.rawValue)
@@ -56,8 +56,9 @@ final class HotkeyManager {
         runLoopSource = nil
     }
 
-    fileprivate func handleKeyDown(keyCode: CGKeyCode, flags: CGEventFlags) {
-        guard flags.contains(.maskControl), !isRecording else { return }
+    /// Returns true if the event was handled (should be swallowed)
+    fileprivate func handleKeyDown(keyCode: CGKeyCode, flags: CGEventFlags) -> Bool {
+        guard flags.contains(.maskControl) else { return false }
 
         let mode: SpeechMode?
         if keyCode == standardKeyCode {
@@ -65,23 +66,30 @@ final class HotkeyManager {
         } else if keyCode == socialMediaKeyCode {
             mode = .socialMedia
         } else {
-            mode = nil
+            return false
         }
 
-        guard let detectedMode = mode else { return }
+        guard let detectedMode = mode else { return false }
+
+        // Already recording — still swallow the event (key repeat)
+        if isRecording { return true }
+
         isRecording = true
         activeMode = detectedMode
         delegate?.hotkeyManager(self, didStartRecordingForMode: detectedMode)
+        return true
     }
 
-    fileprivate func handleKeyUp(keyCode: CGKeyCode) {
-        guard isRecording else { return }
-        guard keyCode == standardKeyCode || keyCode == socialMediaKeyCode else { return }
+    /// Returns true if the event was handled (should be swallowed)
+    fileprivate func handleKeyUp(keyCode: CGKeyCode) -> Bool {
+        guard keyCode == standardKeyCode || keyCode == socialMediaKeyCode else { return false }
+        guard isRecording else { return false }
 
         let mode = activeMode ?? .standard
         isRecording = false
         activeMode = nil
         delegate?.hotkeyManager(self, didStopRecordingForMode: mode)
+        return true
     }
 
     fileprivate func handleFlagsChanged(flags: CGEventFlags) {
@@ -108,17 +116,20 @@ private func hotkeyCallback(
     case .keyDown:
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         let flags = event.flags
-        manager.handleKeyDown(keyCode: keyCode, flags: flags)
+        if manager.handleKeyDown(keyCode: keyCode, flags: flags) {
+            return nil // Swallow the event — don't pass to active app
+        }
 
     case .keyUp:
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-        manager.handleKeyUp(keyCode: keyCode)
+        if manager.handleKeyUp(keyCode: keyCode) {
+            return nil // Swallow the event
+        }
 
     case .flagsChanged:
         manager.handleFlagsChanged(flags: event.flags)
 
     case .tapDisabledByTimeout, .tapDisabledByUserInput:
-        // Re-enable the tap
         if let tap = manager.eventTap {
             CGEvent.tapEnable(tap: tap, enable: true)
         }

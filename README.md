@@ -42,9 +42,11 @@ Hold Ctrl+1/2 → Record audio → Release key → Whisper transcription → Cla
 
 3. Build and run (**Cmd+R**)
 
-4. Grant permissions when prompted:
-   - **Microphone**: Required for recording
-   - **Accessibility**: Required for global hotkeys (System Settings → Privacy & Security → Accessibility)
+4. Grant permissions:
+   - **Microphone**: Allow when prompted
+   - **Accessibility**: System Settings → Privacy & Security → Accessibility
+     - When running from **Xcode**: add **Xcode.app** (not SpeechToText) to the Accessibility list
+     - When running the **exported .app**: add **SpeechToText.app** to the list
 
 5. Configure API keys:
    - Click the microphone icon in the menu bar → **Settings...**
