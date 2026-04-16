@@ -38,11 +38,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         let menu = NSMenu()
 
-        standardModeItem = NSMenuItem(title: "Standard Mode (^1)", action: #selector(selectStandardMode), keyEquivalent: "")
+        standardModeItem = NSMenuItem(title: "Standard Mode (⌥S)", action: #selector(selectStandardMode), keyEquivalent: "")
         standardModeItem.target = self
         menu.addItem(standardModeItem)
 
-        socialMediaModeItem = NSMenuItem(title: "Social Media Mode (^2)", action: #selector(selectSocialMediaMode), keyEquivalent: "")
+        socialMediaModeItem = NSMenuItem(title: "Social Media Mode (⌥M)", action: #selector(selectSocialMediaMode), keyEquivalent: "")
         socialMediaModeItem.target = self
         menu.addItem(socialMediaModeItem)
 

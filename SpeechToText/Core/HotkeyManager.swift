@@ -19,12 +19,14 @@ final class HotkeyManager {
     fileprivate var isRecording = false
     fileprivate var activeMode: SpeechMode?
 
-    // Configurable keycodes (default: 1 = kVK_ANSI_1, 2 = kVK_ANSI_2)
-    fileprivate var standardKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_1)
-    fileprivate var socialMediaKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_2)
+    // Option+S = Standard Mode, Option+M = Social Media Mode
+    fileprivate let standardKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_S)    // 1
+    fileprivate let socialMediaKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_M) // 46
 
     func start() -> Bool {
-        let eventMask: CGEventMask = (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue) | (1 << CGEventType.flagsChanged.rawValue)
+        let eventMask: CGEventMask = (1 << CGEventType.keyDown.rawValue)
+            | (1 << CGEventType.keyUp.rawValue)
+            | (1 << CGEventType.flagsChanged.rawValue)
 
         guard let tap = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
@@ -42,6 +44,7 @@ final class HotkeyManager {
         runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
         CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
         CGEvent.tapEnable(tap: tap, enable: true)
+        print("HotkeyManager: Event tap created and enabled.")
         return true
     }
 
@@ -56,9 +59,14 @@ final class HotkeyManager {
         runLoopSource = nil
     }
 
-    /// Returns true if the event was handled (should be swallowed)
+    /// Returns true if the event was handled and should be swallowed
     fileprivate func handleKeyDown(keyCode: CGKeyCode, flags: CGEventFlags) -> Bool {
-        guard flags.contains(.maskControl) else { return false }
+        // Require Option (Alt) modifier, reject if Command/Control also held
+        let optionOnly = flags.contains(.maskAlternate)
+            && !flags.contains(.maskCommand)
+            && !flags.contains(.maskControl)
+
+        guard optionOnly else { return false }
 
         let mode: SpeechMode?
         if keyCode == standardKeyCode {
@@ -71,7 +79,7 @@ final class HotkeyManager {
 
         guard let detectedMode = mode else { return false }
 
-        // Already recording — still swallow the event (key repeat)
+        // Already recording — still swallow the repeated key event
         if isRecording { return true }
 
         isRecording = true
@@ -80,10 +88,10 @@ final class HotkeyManager {
         return true
     }
 
-    /// Returns true if the event was handled (should be swallowed)
+    /// Returns true if the event was handled and should be swallowed
     fileprivate func handleKeyUp(keyCode: CGKeyCode) -> Bool {
-        guard keyCode == standardKeyCode || keyCode == socialMediaKeyCode else { return false }
         guard isRecording else { return false }
+        guard keyCode == standardKeyCode || keyCode == socialMediaKeyCode else { return false }
 
         let mode = activeMode ?? .standard
         isRecording = false
@@ -93,8 +101,8 @@ final class HotkeyManager {
     }
 
     fileprivate func handleFlagsChanged(flags: CGEventFlags) {
-        // If Control was released while recording, stop
-        if isRecording && !flags.contains(.maskControl) {
+        // If Option key was released during recording, stop
+        if isRecording && !flags.contains(.maskAlternate) {
             let mode = activeMode ?? .standard
             isRecording = false
             activeMode = nil
@@ -117,13 +125,13 @@ private func hotkeyCallback(
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         let flags = event.flags
         if manager.handleKeyDown(keyCode: keyCode, flags: flags) {
-            return nil // Swallow the event — don't pass to active app
+            return nil // Swallow — don't pass to active app
         }
 
     case .keyUp:
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
         if manager.handleKeyUp(keyCode: keyCode) {
-            return nil // Swallow the event
+            return nil // Swallow
         }
 
     case .flagsChanged:

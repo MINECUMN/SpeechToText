@@ -40,8 +40,8 @@ final class SettingsManager: ObservableObject {
         self.language = UserDefaults.standard.string(forKey: "stt_language") ?? "de"
         self.emojiCount = UserDefaults.standard.object(forKey: "stt_emojiCount") as? Int ?? 3
         self.launchAtLogin = UserDefaults.standard.bool(forKey: "stt_launchAtLogin")
-        self.standardHotkeyLabel = UserDefaults.standard.string(forKey: "stt_standardHotkey") ?? "Control+1"
-        self.socialMediaHotkeyLabel = UserDefaults.standard.string(forKey: "stt_socialMediaHotkey") ?? "Control+2"
+        self.standardHotkeyLabel = UserDefaults.standard.string(forKey: "stt_standardHotkey") ?? "Option+S"
+        self.socialMediaHotkeyLabel = UserDefaults.standard.string(forKey: "stt_socialMediaHotkey") ?? "Option+M"
     }
 
     // MARK: - Keychain API Keys

@@ -46,7 +46,7 @@ final class SpeechCoordinator: HotkeyManagerDelegate {
         } else {
             sendNotification(
                 title: "SpeechToText bereit",
-                body: "\u{2303}1 = Standard \u{00B7} \u{2303}2 = Social Media"
+                body: "\u{2325}S = Standard \u{00B7} \u{2325}M = Social Media"
             )
         }
 
@@ -60,12 +60,31 @@ final class SpeechCoordinator: HotkeyManagerDelegate {
             }
         }
 
-        // Start hotkey listener
-        if !hotkeyManager.start() {
+        // Prompt for Accessibility if not trusted (opens System Settings dialog)
+        let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue(): true] as CFDictionary
+        let trusted = AXIsProcessTrustedWithOptions(options)
+        print("Accessibility trusted: \(trusted)")
+
+        if trusted {
+            if hotkeyManager.start() {
+                print("HotkeyManager started successfully.")
+            } else {
+                sendNotification(
+                    title: "Hotkey-Fehler",
+                    body: "Event Tap konnte nicht erstellt werden."
+                )
+            }
+        } else {
             sendNotification(
                 title: "Bedienungshilfen-Zugriff erforderlich",
-                body: "Bitte SpeechToText in Systemeinstellungen → Datenschutz → Bedienungshilfen aktivieren."
+                body: "Bitte den Dialog bestätigen und die App neu starten."
             )
+            // Retry after a delay (user might grant permission)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) { [weak self] in
+                if AXIsProcessTrusted() {
+                    _ = self?.hotkeyManager.start()
+                }
+            }
         }
     }
 
