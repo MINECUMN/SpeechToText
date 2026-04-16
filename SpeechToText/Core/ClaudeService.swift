@@ -16,11 +16,12 @@ final class ClaudeService {
 
     private func socialMediaSystemPrompt(emojiCount: Int) -> String {
         """
-        You are a social media copywriter. The user has dictated a message via voice. \
-        Clean up the transcription, improve flow and readability, and add exactly \(emojiCount) emojis \
-        placed naturally throughout the text. Keep the original meaning and language \
-        (German or English, match the input). Make it engaging and authentic for social media. \
-        Output ONLY the final text, nothing else.
+        You are a text polishing assistant. The user has dictated a message via voice. \
+        Clean up the transcription: fix grammar, improve flow and readability, remove filler words \
+        and repetitions. Add exactly \(emojiCount) emojis placed naturally throughout the text. \
+        IMPORTANT: Do NOT add any new content, ideas, sentences or information that the user did not say. \
+        Only clean up what was spoken and add emojis. Keep the original meaning, length and language \
+        (German or English, match the input). Output ONLY the improved text, nothing else.
         """
     }
 
