@@ -371,14 +371,41 @@ open SpeechToText.xcodeproj
 
         <!-- Export -->
         <section id="export">
-            <h2>Export for Another Mac</h2>
+            <h2>Export as Standalone App</h2>
+            <p>Build and install the app so it runs without Xcode:</p>
+            <pre><code># 1. Archive Release build
+xcodebuild -project SpeechToText.xcodeproj -scheme SpeechToText \
+  -configuration Release -archivePath ~/Desktop/SpeechToText.xcarchive archive
+
+# 2. Extract .app
+cp -R ~/Desktop/SpeechToText.xcarchive/Products/Applications/SpeechToText.app \
+  ~/Desktop/SpeechToText.app
+
+# 3. Install to /Applications
+cp -R ~/Desktop/SpeechToText.app /Applications/SpeechToText.app
+
+# 4. Cleanup
+rm -rf ~/Desktop/SpeechToText.xcarchive ~/Desktop/SpeechToText.app
+
+# 5. Launch
+open /Applications/SpeechToText.app</code></pre>
+
+            <div class="callout">
+                After installation, add <code>/Applications/SpeechToText.app</code> to System Settings &rarr; Privacy &amp; Security &rarr; Accessibility. The permission persists permanently for exported builds (unlike Xcode debug builds).
+            </div>
+
+            <h3>Enable Autostart (Launch at Login)</h3>
+            <p>Via app: Menu bar icon &rarr; Settings &rarr; <strong>Launch at Login</strong> toggle.</p>
+            <p>Via command line:</p>
+            <pre><code>defaults write tech.minec.SpeechToText stt_launchAtLogin -bool true</code></pre>
+            <p>Uses <code>SMAppService.mainApp</code> (macOS 13+) to register as a login item.</p>
+
+            <h3>Installing on Another Mac</h3>
             <ol>
-                <li>Open project in Xcode</li>
-                <li>Product &rarr; Archive</li>
-                <li>Distribute App &rarr; Copy App</li>
-                <li>Copy <code>SpeechToText.app</code> to target Mac's <code>/Applications/</code></li>
-                <li>On first launch: grant Microphone + Accessibility</li>
-                <li>Menu bar icon &rarr; Settings &rarr; enter API keys</li>
+                <li>Copy <code>/Applications/SpeechToText.app</code> to the other Mac</li>
+                <li>Grant Microphone + Accessibility permissions</li>
+                <li>Enter API keys in Settings</li>
+                <li>Enable "Launch at Login" if desired</li>
             </ol>
         </section>
 
@@ -403,6 +430,8 @@ open SpeechToText.xcodeproj
                 <tr><td>Fix</td><td>Swallow hotkey events, Accessibility docs</td></tr>
                 <tr><td>Fix</td><td>Hotkeys changed to Option+S / Option+M</td></tr>
                 <tr><td>Fix</td><td>Social Media prompt &mdash; no extra content, only cleanup + emojis</td></tr>
+                <tr><td>Docs</td><td>Complete documentation rewrite with final hotkeys and prompts</td></tr>
+                <tr><td>Fix</td><td>Export as standalone .app to /Applications, autostart config</td></tr>
             </table>
         </section>
 

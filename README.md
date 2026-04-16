@@ -66,12 +66,50 @@ Both keys are stored securely in the macOS Keychain.
 3. Hold **Option+S**, speak a sentence, release
 4. The enhanced text appears automatically
 
+## Export as Standalone App (without Xcode)
+
+Build and install the app so it runs independently — no Xcode needed:
+
+```bash
+cd /path/to/SpeechToText
+
+# 1. Archive Release build
+xcodebuild -project SpeechToText.xcodeproj -scheme SpeechToText \
+  -configuration Release -archivePath ~/Desktop/SpeechToText.xcarchive archive
+
+# 2. Extract .app from archive
+cp -R ~/Desktop/SpeechToText.xcarchive/Products/Applications/SpeechToText.app \
+  ~/Desktop/SpeechToText.app
+
+# 3. Install to Applications
+cp -R ~/Desktop/SpeechToText.app /Applications/SpeechToText.app
+
+# 4. Cleanup
+rm -rf ~/Desktop/SpeechToText.xcarchive ~/Desktop/SpeechToText.app
+
+# 5. Launch
+open /Applications/SpeechToText.app
+```
+
+After launch:
+- Add `/Applications/SpeechToText.app` to **System Settings → Privacy & Security → Accessibility**
+- The Accessibility permission persists permanently for exported builds (unlike Xcode debug builds)
+
+### Enable Autostart
+
+In the app: Menu bar icon → Settings → **Launch at Login** toggle.
+
+Or via command line:
+```bash
+defaults write tech.minec.SpeechToText stt_launchAtLogin -bool true
+```
+
 ## Installing on Another Mac
 
-1. In Xcode: **Product → Archive → Distribute App → Copy App**
-2. Copy `SpeechToText.app` to the other Mac's Applications folder
-3. On first launch: grant Microphone and Accessibility permissions
-4. Open Settings (menu bar icon) and enter API keys
+1. Copy `/Applications/SpeechToText.app` to the other Mac's Applications folder
+2. On first launch: grant Microphone and Accessibility permissions
+3. Open Settings (menu bar icon) and enter API keys
+4. Enable "Launch at Login" if desired
 
 ## Where to Get API Keys
 

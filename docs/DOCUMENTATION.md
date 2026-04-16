@@ -231,14 +231,50 @@ open SpeechToText.xcodeproj
 
 ---
 
-## Export for Another Mac
+## Export as Standalone App
 
-1. Open project in Xcode
-2. Product → Archive
-3. Distribute App → Copy App
-4. Copy `SpeechToText.app` to target Mac's `/Applications/`
-5. On first launch: grant Microphone + Accessibility permissions
-6. Open Settings via menu bar icon → enter API keys
+Build and install the app so it runs without Xcode:
+
+```bash
+# 1. Archive Release build
+xcodebuild -project SpeechToText.xcodeproj -scheme SpeechToText \
+  -configuration Release -archivePath ~/Desktop/SpeechToText.xcarchive archive
+
+# 2. Extract .app
+cp -R ~/Desktop/SpeechToText.xcarchive/Products/Applications/SpeechToText.app \
+  ~/Desktop/SpeechToText.app
+
+# 3. Install to /Applications
+cp -R ~/Desktop/SpeechToText.app /Applications/SpeechToText.app
+
+# 4. Cleanup
+rm -rf ~/Desktop/SpeechToText.xcarchive ~/Desktop/SpeechToText.app
+
+# 5. Launch
+open /Applications/SpeechToText.app
+```
+
+After installation:
+- Add `/Applications/SpeechToText.app` to System Settings → Privacy & Security → Accessibility
+- Accessibility permission persists permanently for exported builds (unlike Xcode debug builds)
+
+### Enable Autostart (Launch at Login)
+
+Via app: Menu bar icon → Settings → "Launch at Login" toggle
+
+Via command line:
+```bash
+defaults write tech.minec.SpeechToText stt_launchAtLogin -bool true
+```
+
+Uses `SMAppService.mainApp` (macOS 13+) to register as a login item.
+
+### Installing on Another Mac
+
+1. Copy `/Applications/SpeechToText.app` to the other Mac
+2. Grant Microphone + Accessibility permissions
+3. Enter API keys in Settings
+4. Enable "Launch at Login" if desired
 
 ---
 
@@ -275,3 +311,5 @@ open SpeechToText.xcodeproj
 | Fix | Swallow hotkey events, Accessibility docs for Xcode |
 | Fix | Hotkeys changed to Option+S / Option+M, AXIsProcessTrustedWithOptions |
 | Fix | Social Media prompt — only cleanup + emojis, no extra content |
+| Docs | Complete documentation rewrite with final hotkeys and prompts |
+| Fix | Export as standalone .app to /Applications, autostart configuration |
