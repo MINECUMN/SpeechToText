@@ -2,71 +2,83 @@
 
 A native macOS menu bar application providing push-to-talk speech-to-text with AI-powered text enhancement.
 
-## Overview
+## How It Works
 
 Hold a hotkey, speak, release — your enhanced text gets pasted into the active application.
 
-- **Control+1**: Standard Mode — cleans up grammar, flow, filler words
-- **Control+2**: Social Media Mode — polishes text and adds configurable emojis
-
-## How It Works
-
 ```
-Hold Ctrl+1/2 → Record audio → Release key → Whisper transcription → Claude enhancement → Auto-paste
+Hold Option+S or Option+M → Speak → Release → Text appears in your active app
 ```
 
-1. Hold **Control+1** (Standard) or **Control+2** (Social Media)
-2. Speak your message
-3. Release the key
-4. The app transcribes via OpenAI Whisper, enhances via Claude, and pastes the result into your active text field
+| Hotkey | Mode | What it does |
+|--------|------|-------------|
+| **Option+S** (hold) | Standard | Fixes grammar, removes filler words, improves readability |
+| **Option+M** (hold) | Social Media | Same cleanup + adds emojis naturally (no extra content added) |
 
 ## Requirements
 
 - **macOS 13 Ventura** or newer
 - **Xcode 15+** (to build from source)
-- **OpenAI API Key** (for Whisper transcription)
-- **Anthropic API Key** (for Claude text enhancement)
+- **OpenAI API Key** — for Whisper speech-to-text
+- **Anthropic API Key** — for Claude text enhancement
 
 ## Setup from Scratch
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/MINECUMN/SpeechToText.git
-   ```
+### 1. Clone and open
 
-2. Open the project in Xcode:
-   ```bash
-   cd SpeechToText
-   open SpeechToText.xcodeproj
-   ```
+```bash
+git clone https://github.com/MINECUMN/SpeechToText.git
+cd SpeechToText
+open SpeechToText.xcodeproj
+```
 
-3. Build and run (**Cmd+R**)
+### 2. Build and run
 
-4. Grant permissions:
-   - **Microphone**: Allow when prompted
-   - **Accessibility**: System Settings → Privacy & Security → Accessibility
-     - When running from **Xcode**: add **Xcode.app** (not SpeechToText) to the Accessibility list
-     - When running the **exported .app**: add **SpeechToText.app** to the list
+Press **Cmd+R** in Xcode.
 
-5. Configure API keys:
-   - Click the microphone icon in the menu bar → **Settings...**
-   - Enter your OpenAI API Key
-   - Enter your Anthropic (Claude) API Key
-   - Both keys are stored securely in the macOS Keychain
+### 3. Grant permissions
+
+**Microphone:** Allow when the system dialog appears.
+
+**Accessibility (required for global hotkeys):**
+- System Settings → Privacy & Security → Accessibility
+- When running from **Xcode**: add the built app from DerivedData:
+  1. Click "+"
+  2. Press Cmd+Shift+G
+  3. Paste: `~/Library/Developer/Xcode/DerivedData/` → find the `SpeechToText-…/Build/Products/Debug/SpeechToText.app`
+  4. Enable the toggle
+- When running the **exported .app**: add `SpeechToText.app` directly
+
+> **Note:** During development, the Accessibility permission resets after each rebuild. You need to re-add the app each time. This does not happen with exported/archived builds.
+
+### 4. Configure API keys
+
+1. Click the microphone icon in the menu bar → **Settings...**
+2. Enter your **OpenAI API Key** → Save
+3. Enter your **Anthropic API Key** → Save
+
+Both keys are stored securely in the macOS Keychain.
+
+### 5. Test it
+
+1. Open any app with a text field (Terminal, Notes, TextEdit, browser...)
+2. Click into the text field
+3. Hold **Option+S**, speak a sentence, release
+4. The enhanced text appears automatically
 
 ## Installing on Another Mac
 
 1. In Xcode: **Product → Archive → Distribute App → Copy App**
-2. Copy the exported `SpeechToText.app` to the other Mac's Applications folder
+2. Copy `SpeechToText.app` to the other Mac's Applications folder
 3. On first launch: grant Microphone and Accessibility permissions
-4. Open Settings and enter API keys
+4. Open Settings (menu bar icon) and enter API keys
 
-## API Keys Required
+## Where to Get API Keys
 
-| Key | Where to get it | Purpose |
-|-----|-----------------|---------|
-| OpenAI API Key | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | Whisper speech-to-text |
-| Anthropic API Key | [console.anthropic.com](https://console.anthropic.com) | Claude text enhancement |
+| Key | URL | Cost |
+|-----|-----|------|
+| OpenAI API Key | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) | ~$0.006/minute |
+| Anthropic API Key | [console.anthropic.com](https://console.anthropic.com) | ~$0.001/request |
 
 ## Tech Stack
 
@@ -74,7 +86,7 @@ Hold Ctrl+1/2 → Record audio → Release key → Whisper transcription → Cla
 |-----------|-----------|
 | Language | Swift 5.9+ |
 | Platform | macOS 13 Ventura+ |
-| UI Framework | SwiftUI + AppKit (NSStatusItem) |
+| UI | SwiftUI + AppKit (NSStatusItem) |
 | Speech-to-Text | OpenAI Whisper API (`whisper-1`) |
 | Text Enhancement | Anthropic Claude API (`claude-haiku-4-5-20251001`) |
 | Key Storage | macOS Keychain |
@@ -86,48 +98,75 @@ Hold Ctrl+1/2 → Record audio → Release key → Whisper transcription → Cla
 ```
 SpeechToText/
 ├── App/
-│   ├── SpeechToTextApp.swift     # @main entry, SpeechCoordinator (pipeline orchestration)
-│   └── AppDelegate.swift         # Menu bar UI, icon states, settings window
+│   ├── SpeechToTextApp.swift      # @main entry, SpeechCoordinator (pipeline)
+│   └── AppDelegate.swift          # Menu bar UI, icon states, settings window
 ├── Core/
-│   ├── HotkeyManager.swift       # CGEventTap for Ctrl+1/Ctrl+2 push-to-talk
-│   ├── AudioRecorder.swift       # AVAudioRecorder, M4A 16kHz mono
-│   ├── WhisperService.swift      # OpenAI Whisper API (multipart upload)
-│   ├── ClaudeService.swift       # Anthropic Claude API (Standard + Social Media modes)
-│   └── PasteManager.swift        # Focus preservation + NSPasteboard + Cmd+V simulation
+│   ├── HotkeyManager.swift        # CGEventTap — Option+S / Option+M
+│   ├── AudioRecorder.swift        # AVAudioRecorder — M4A 16kHz mono
+│   ├── WhisperService.swift       # OpenAI Whisper API — multipart upload
+│   ├── ClaudeService.swift        # Claude API — Standard + Social Media
+│   └── PasteManager.swift         # Focus save → clipboard → Cmd+V paste
 ├── Settings/
-│   ├── SettingsManager.swift     # Keychain API keys + UserDefaults preferences
-│   └── SettingsView.swift        # SwiftUI settings panel
+│   ├── SettingsManager.swift      # Keychain + UserDefaults singleton
+│   └── SettingsView.swift         # SwiftUI settings panel
 ├── Assets.xcassets/
 ├── Info.plist
 └── SpeechToText.entitlements
 ```
 
-## Menu Bar States
+### Pipeline Flow
 
-| State | Icon | Description |
-|-------|------|-------------|
-| Idle (Standard) | Microphone | Ready, Standard Mode active |
-| Idle (Social Media) | Microphone + phone emoji | Ready, Social Media Mode active |
-| Recording | Red microphone | Recording in progress |
-| Transcribing | Ellipsis circle + "..." | Whisper API processing |
-| Enhancing | Sparkles | Claude API processing |
+```
+Option+S/M held → HotkeyManager detects
+  → PasteManager saves frontmost app
+  → AudioRecorder starts recording
+  → Key released
+  → WhisperService transcribes (OpenAI API)
+  → ClaudeService enhances text (Anthropic API)
+  → PasteManager re-activates app + pastes via Cmd+V
+```
+
+## Menu Bar Icon States
+
+| State | Icon | Meaning |
+|-------|------|---------|
+| Idle (Standard) | 🎤 | Ready — Option+S to record |
+| Idle (Social Media) | 🎤📱 | Ready — Option+M to record |
+| Recording | 🔴 | Recording in progress |
+| Transcribing | ⋯ | Whisper API processing |
+| Enhancing | ✨ | Claude API processing |
 
 ## Settings
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| OpenAI API Key | — | Stored in Keychain |
-| Claude API Key | — | Stored in Keychain |
-| Language | Deutsch | Auto / Deutsch / English |
-| Emoji Count | 3 | 1–20, for Social Media Mode |
+| OpenAI API Key | — | Stored in macOS Keychain |
+| Claude API Key | — | Stored in macOS Keychain |
+| Language | Deutsch | Auto-Detect / Deutsch / English |
+| Emoji Count | 3 | 1–20, only used in Social Media Mode |
 | Launch at Login | Off | Auto-start with macOS |
+
+## Error Handling
+
+All errors are shown as macOS notifications — no modal dialogs.
+
+| Error | What happens |
+|-------|-------------|
+| Missing OpenAI Key | Notification + Settings opens |
+| Missing Claude Key | Notification + raw Whisper text is pasted |
+| Whisper API error | Notification with error details |
+| Claude API error | Notification + raw Whisper text is pasted as fallback |
+| No microphone access | System dialog triggered |
+| No accessibility access | System dialog triggered + notification |
 
 ## Known Limitations
 
-- Hotkeys are hardcoded to Control+1 and Control+2 (display is configurable, key codes are not yet remappable at runtime)
-- No audio level indicator during recording
-- Requires Accessibility permission for global hotkey monitoring
-- App is not sandboxed (required for CGEventTap)
+- Hotkeys (Option+S / Option+M) are not remappable at runtime
+- No audio level visualization during recording
+- App is not sandboxed (required for CGEventTap global hotkeys)
+- Requires internet (both APIs are cloud-based)
+- Cannot start a new recording while processing is in progress
+- Accessibility permission resets after each Xcode rebuild (not an issue with exported .app)
 
 ## License
 

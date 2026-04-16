@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Native macOS menu bar app for push-to-talk speech-to-text with AI text enhancement. Hold Ctrl+1/2 to record, release to transcribe (Whisper) + enhance (Claude) + auto-paste.
+Native macOS menu bar app for push-to-talk speech-to-text with AI text enhancement. Hold Option+S/M to record, release to transcribe (Whisper) + enhance (Claude) + auto-paste.
 
 ## Build Commands
 
@@ -27,7 +27,7 @@ open SpeechToText.xcodeproj
 HotkeyManager → AudioRecorder → WhisperService → ClaudeService → PasteManager
 ```
 
-- **HotkeyManager**: CGEventTap for global Ctrl+1/Ctrl+2 push-to-talk
+- **HotkeyManager**: CGEventTap for global Option+S / Option+M push-to-talk (maskAlternate)
 - **AudioRecorder**: AVAudioRecorder, M4A 16kHz mono, temp files
 - **WhisperService**: OpenAI `POST /v1/audio/transcriptions`, multipart upload
 - **ClaudeService**: Anthropic `POST /v1/messages`, model `claude-haiku-4-5-20251001`

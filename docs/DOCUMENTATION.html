@@ -30,6 +30,7 @@
         }
         header h1 { font-size: 36px; margin-bottom: 8px; }
         header p { font-size: 16px; opacity: 0.85; }
+        header a { color: var(--cream); }
         nav {
             background: var(--white);
             border-bottom: 1px solid var(--gray-light);
@@ -50,7 +51,7 @@
             transition: background 0.2s, color 0.2s;
         }
         nav a:hover { background: var(--teal); color: var(--white); }
-        main { max-width: 900px; margin: 24px auto; padding: 0 24px; }
+        main { max-width: 920px; margin: 24px auto; padding: 0 24px; }
         section {
             background: var(--white);
             border: 1px solid var(--gray-light);
@@ -60,7 +61,8 @@
         }
         h2 { font-size: 28px; color: var(--teal); margin-bottom: 16px; border-bottom: 2px solid var(--gray-light); padding-bottom: 8px; }
         h3 { font-size: 20px; color: var(--teal-medium); margin: 16px 0 8px; }
-        p { margin-bottom: 12px; font-size: 14px; }
+        p, li { margin-bottom: 8px; font-size: 14px; }
+        ol, ul { padding-left: 20px; }
         table { width: 100%; border-collapse: collapse; margin: 12px 0; }
         th { background: var(--navy); color: var(--white); padding: 10px 12px; text-align: left; font-size: 14px; }
         td { padding: 10px 12px; border-bottom: 1px solid var(--gray-light); font-size: 14px; }
@@ -83,28 +85,28 @@
             line-height: 1.5;
         }
         pre code { background: none; padding: 0; color: inherit; }
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            font-weight: bold;
+        .callout {
+            background: #e8f4f8;
+            border-left: 4px solid var(--teal);
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 0 4px 4px 0;
+            font-size: 14px;
         }
-        .badge-success { background: #d4edda; color: #155724; }
-        .badge-info { background: #d1ecf1; color: #0c5460; }
         footer {
             text-align: center;
             padding: 24px;
             color: var(--gray-dark);
             font-size: 13px;
         }
+        footer a { color: var(--teal); }
     </style>
 </head>
 <body>
     <header>
         <h1>SpeechToText</h1>
         <p>macOS Menu Bar Speech-to-Text App with Whisper + Claude AI</p>
-        <p style="margin-top: 8px; opacity: 0.7;">Repository: <a href="https://github.com/MINECUMN/SpeechToText" style="color: var(--cream);">github.com/MINECUMN/SpeechToText</a></p>
+        <p style="margin-top: 8px; opacity: 0.7;"><a href="https://github.com/MINECUMN/SpeechToText">github.com/MINECUMN/SpeechToText</a></p>
     </header>
 
     <nav>
@@ -112,19 +114,23 @@
         <ul>
             <li><a href="#overview">Overview</a></li>
             <li><a href="#files">Swift Files</a></li>
+            <li><a href="#hotkeys">Hotkeys</a></li>
             <li><a href="#apis">APIs</a></li>
+            <li><a href="#prompts">Prompts</a></li>
             <li><a href="#permissions">Permissions</a></li>
             <li><a href="#config">Configuration</a></li>
             <li><a href="#pipeline">Pipeline</a></li>
-            <li><a href="#errors">Error Handling</a></li>
+            <li><a href="#errors">Errors</a></li>
             <li><a href="#frameworks">Frameworks</a></li>
-            <li><a href="#build">Build &amp; Run</a></li>
+            <li><a href="#build">Build</a></li>
             <li><a href="#export">Export</a></li>
+            <li><a href="#history">Git History</a></li>
             <li><a href="#limitations">Limitations</a></li>
         </ul>
     </nav>
 
     <main>
+
         <!-- Overview -->
         <section id="overview">
             <h2>Project Overview</h2>
@@ -134,8 +140,8 @@
                 <tr><td>macOS Requirement</td><td>13.0 Ventura+</td></tr>
                 <tr><td>Xcode Requirement</td><td>15.0+</td></tr>
                 <tr><td>Swift Version</td><td>5.0+</td></tr>
-                <tr><td>Dependencies</td><td>None (pure Apple frameworks)</td></tr>
-                <tr><td>Total Lines of Code</td><td>1,085 (9 Swift files)</td></tr>
+                <tr><td>External Dependencies</td><td>None</td></tr>
+                <tr><td>Total Lines of Code</td><td>~1,124 (9 Swift files)</td></tr>
             </table>
         </section>
 
@@ -144,16 +150,29 @@
             <h2>All Swift Files</h2>
             <table>
                 <tr><th>File</th><th>Location</th><th>Purpose</th><th>Lines</th></tr>
-                <tr><td><code>SpeechToTextApp.swift</code></td><td>App/</td><td>@main entry, SpeechCoordinator pipeline orchestration</td><td>195</td></tr>
+                <tr><td><code>SpeechToTextApp.swift</code></td><td>App/</td><td>@main entry, SpeechCoordinator pipeline orchestration</td><td>214</td></tr>
                 <tr><td><code>AppDelegate.swift</code></td><td>App/</td><td>NSStatusItem menu bar, AppState icons, settings window</td><td>157</td></tr>
-                <tr><td><code>HotkeyManager.swift</code></td><td>Core/</td><td>CGEventTap for Ctrl+1/Ctrl+2 push-to-talk</td><td>131</td></tr>
+                <tr><td><code>HotkeyManager.swift</code></td><td>Core/</td><td>CGEventTap for Option+S / Option+M push-to-talk</td><td>150</td></tr>
                 <tr><td><code>AudioRecorder.swift</code></td><td>Core/</td><td>AVAudioRecorder M4A 16kHz mono</td><td>52</td></tr>
                 <tr><td><code>WhisperService.swift</code></td><td>Core/</td><td>OpenAI Whisper API multipart upload</td><td>86</td></tr>
-                <tr><td><code>ClaudeService.swift</code></td><td>Core/</td><td>Anthropic Claude API, 2 modes</td><td>89</td></tr>
+                <tr><td><code>ClaudeService.swift</code></td><td>Core/</td><td>Anthropic Claude API, Standard + Social Media</td><td>90</td></tr>
                 <tr><td><code>PasteManager.swift</code></td><td>Core/</td><td>Focus preservation + Cmd+V simulation</td><td>41</td></tr>
                 <tr><td><code>SettingsManager.swift</code></td><td>Settings/</td><td>Keychain + UserDefaults + SMAppService</td><td>129</td></tr>
                 <tr><td><code>SettingsView.swift</code></td><td>Settings/</td><td>SwiftUI settings panel</td><td>205</td></tr>
             </table>
+        </section>
+
+        <!-- Hotkeys -->
+        <section id="hotkeys">
+            <h2>Hotkeys</h2>
+            <table>
+                <tr><th>Hotkey</th><th>Mode</th><th>Key Code</th><th>Modifier</th></tr>
+                <tr><td><strong>Option+S</strong></td><td>Standard</td><td><code>kVK_ANSI_S</code> (1)</td><td><code>.maskAlternate</code></td></tr>
+                <tr><td><strong>Option+M</strong></td><td>Social Media</td><td><code>kVK_ANSI_M</code> (46)</td><td><code>.maskAlternate</code></td></tr>
+            </table>
+            <p><strong>Detection:</strong> <code>CGEventTap</code> at <code>cgSessionEventTap</code> with <code>headInsertEventTap</code>. Events are swallowed (return <code>nil</code>) to prevent characters reaching the active app.</p>
+            <p><strong>Modifier filtering:</strong> Only Option key. Command and Control are rejected to avoid conflicts.</p>
+            <p><strong>Release detection:</strong> Key up stops recording. Option release via <code>flagsChanged</code> also stops as safety fallback.</p>
         </section>
 
         <!-- APIs -->
@@ -165,9 +184,10 @@
                 <tr><th>Setting</th><th>Value</th></tr>
                 <tr><td>Endpoint</td><td><code>POST https://api.openai.com/v1/audio/transcriptions</code></td></tr>
                 <tr><td>Model</td><td><code>whisper-1</code></td></tr>
-                <tr><td>Auth</td><td><code>Authorization: Bearer {KEY}</code></td></tr>
+                <tr><td>Authorization</td><td><code>Authorization: Bearer {KEY}</code></td></tr>
                 <tr><td>Content-Type</td><td><code>multipart/form-data</code></td></tr>
-                <tr><td>Response</td><td>Plain text</td></tr>
+                <tr><td>Form Fields</td><td><code>model</code>, <code>file</code>, <code>language</code> (optional), <code>response_format</code> ("text")</td></tr>
+                <tr><td>Response</td><td>Plain text transcription</td></tr>
             </table>
 
             <h3>Anthropic Claude API</h3>
@@ -176,16 +196,32 @@
                 <tr><td>Endpoint</td><td><code>POST https://api.anthropic.com/v1/messages</code></td></tr>
                 <tr><td>Model</td><td><code>claude-haiku-4-5-20251001</code></td></tr>
                 <tr><td>Max Tokens</td><td>1024</td></tr>
-                <tr><td>Auth</td><td><code>x-api-key: {KEY}</code></td></tr>
-                <tr><td>API Version</td><td><code>2023-06-01</code></td></tr>
+                <tr><td>Authorization</td><td><code>x-api-key: {KEY}</code></td></tr>
+                <tr><td>Version</td><td><code>anthropic-version: 2023-06-01</code></td></tr>
             </table>
 
-            <h3>API Keys</h3>
+            <h3>API Keys Storage</h3>
             <table>
-                <tr><th>Key</th><th>Keychain Service ID</th><th>How to obtain</th></tr>
+                <tr><th>Key</th><th>Keychain Service ID</th><th>Source</th></tr>
                 <tr><td>OpenAI API Key</td><td><code>tech.minec.SpeechToText.openai</code></td><td>platform.openai.com/api-keys</td></tr>
                 <tr><td>Anthropic API Key</td><td><code>tech.minec.SpeechToText.claude</code></td><td>console.anthropic.com</td></tr>
             </table>
+        </section>
+
+        <!-- Prompts -->
+        <section id="prompts">
+            <h2>Claude System Prompts</h2>
+
+            <h3>Standard Mode (Option+S)</h3>
+            <div class="callout">
+                You are a text polishing assistant. The user has dictated a message via voice. Your task is to clean up the transcription: fix grammar, improve flow and readability, remove filler words and repetitions. Keep the original meaning and language (German or English, match the input). Keep the same tone and register. Output ONLY the improved text, nothing else.
+            </div>
+
+            <h3>Social Media Mode (Option+M)</h3>
+            <div class="callout">
+                You are a text polishing assistant. The user has dictated a message via voice. Clean up the transcription: fix grammar, improve flow and readability, remove filler words and repetitions. Add exactly [N] emojis placed naturally throughout the text. <strong>IMPORTANT: Do NOT add any new content, ideas, sentences or information that the user did not say.</strong> Only clean up what was spoken and add emojis. Keep the original meaning, length and language (German or English, match the input). Output ONLY the improved text, nothing else.
+            </div>
+            <p>The emoji count [N] is configurable in Settings (default: 3, range: 1&ndash;20).</p>
         </section>
 
         <!-- Permissions -->
@@ -197,24 +233,29 @@
                 <tr><th>Permission</th><th>Framework</th><th>Purpose</th></tr>
                 <tr><td>Microphone</td><td>AVFoundation</td><td>Audio recording</td></tr>
                 <tr><td>Accessibility</td><td>ApplicationServices</td><td>CGEventTap global hotkeys</td></tr>
-                <tr><td>Notifications</td><td>UserNotifications</td><td>Error and status messages</td></tr>
+                <tr><td>Notifications</td><td>UserNotifications</td><td>Error/status messages</td></tr>
             </table>
 
-            <h3>Info.plist</h3>
+            <h3>Info.plist Entries</h3>
             <table>
                 <tr><th>Key</th><th>Value</th></tr>
-                <tr><td><code>LSUIElement</code></td><td>YES (menu bar only, no Dock icon)</td></tr>
-                <tr><td><code>NSMicrophoneUsageDescription</code></td><td>Microphone access message</td></tr>
-                <tr><td><code>NSAppleEventsUsageDescription</code></td><td>Apple Events access message</td></tr>
+                <tr><td><code>LSUIElement</code></td><td><code>YES</code> &mdash; menu bar only, no Dock icon</td></tr>
+                <tr><td><code>NSMicrophoneUsageDescription</code></td><td>Microphone access message for permission dialog</td></tr>
+                <tr><td><code>NSAppleEventsUsageDescription</code></td><td>Apple Events access for paste into other apps</td></tr>
             </table>
 
             <h3>Entitlements</h3>
             <table>
                 <tr><th>Key</th><th>Value</th><th>Reason</th></tr>
-                <tr><td><code>com.apple.security.app-sandbox</code></td><td>NO</td><td>CGEventTap requires it</td></tr>
-                <tr><td><code>com.apple.security.device.audio-input</code></td><td>YES</td><td>Microphone</td></tr>
-                <tr><td><code>com.apple.security.hardened-runtime</code></td><td>YES</td><td>Security</td></tr>
+                <tr><td><code>com.apple.security.app-sandbox</code></td><td><code>NO</code></td><td>CGEventTap requires non-sandboxed</td></tr>
+                <tr><td><code>com.apple.security.device.audio-input</code></td><td><code>YES</code></td><td>Microphone recording</td></tr>
+                <tr><td><code>com.apple.security.hardened-runtime</code></td><td><code>YES</code></td><td>Security hardening</td></tr>
             </table>
+
+            <h3>Accessibility During Development</h3>
+            <div class="callout">
+                When running from Xcode, the built binary in DerivedData needs Accessibility permission. This resets after each rebuild (code signature changes). Add the app from <code>~/Library/Developer/Xcode/DerivedData/SpeechToText-.../Build/Products/Debug/SpeechToText.app</code> to System Settings &rarr; Accessibility. This is not an issue with exported/archived builds.
+            </div>
         </section>
 
         <!-- Configuration -->
@@ -224,11 +265,11 @@
             <h3>UserDefaults Keys</h3>
             <table>
                 <tr><th>Key</th><th>Type</th><th>Default</th><th>Purpose</th></tr>
-                <tr><td><code>stt_language</code></td><td>String</td><td>"de"</td><td>Whisper language</td></tr>
-                <tr><td><code>stt_emojiCount</code></td><td>Int</td><td>3</td><td>Emojis for Social Media mode</td></tr>
-                <tr><td><code>stt_launchAtLogin</code></td><td>Bool</td><td>false</td><td>Auto-start</td></tr>
-                <tr><td><code>stt_standardHotkey</code></td><td>String</td><td>"Control+1"</td><td>Display label</td></tr>
-                <tr><td><code>stt_socialMediaHotkey</code></td><td>String</td><td>"Control+2"</td><td>Display label</td></tr>
+                <tr><td><code>stt_language</code></td><td>String</td><td><code>"de"</code></td><td>Whisper language</td></tr>
+                <tr><td><code>stt_emojiCount</code></td><td>Int</td><td><code>3</code></td><td>Emojis for Social Media mode</td></tr>
+                <tr><td><code>stt_launchAtLogin</code></td><td>Bool</td><td><code>false</code></td><td>Auto-start with macOS</td></tr>
+                <tr><td><code>stt_standardHotkey</code></td><td>String</td><td><code>"Option+S"</code></td><td>Display label</td></tr>
+                <tr><td><code>stt_socialMediaHotkey</code></td><td>String</td><td><code>"Option+M"</code></td><td>Display label</td></tr>
             </table>
 
             <h3>Menu Bar Icon States</h3>
@@ -236,7 +277,7 @@
                 <tr><th>State</th><th>SF Symbol</th><th>Indicator</th></tr>
                 <tr><td>Idle Standard</td><td><code>mic</code></td><td>&mdash;</td></tr>
                 <tr><td>Idle Social Media</td><td><code>mic</code></td><td>Phone emoji</td></tr>
-                <tr><td>Recording</td><td><code>mic.fill</code> (red)</td><td>&mdash;</td></tr>
+                <tr><td>Recording</td><td><code>mic.fill</code> (red tinted)</td><td>&mdash;</td></tr>
                 <tr><td>Transcribing</td><td><code>ellipsis.circle</code></td><td>"..."</td></tr>
                 <tr><td>Enhancing</td><td><code>sparkles</code></td><td>Sparkles</td></tr>
             </table>
@@ -245,63 +286,67 @@
         <!-- Pipeline -->
         <section id="pipeline">
             <h2>End-to-End Pipeline</h2>
-            <pre><code>1. User holds Control+1 or Control+2
-2. HotkeyManager detects keyDown &rarr; SpeechCoordinator.didStartRecording
-3. PasteManager saves frontmost app
-4. AudioRecorder starts M4A recording (16kHz mono)
-5. Menu bar &rarr; red mic icon
-6. User releases key &rarr; didStopRecording
-7. AudioRecorder stops, returns file URL
-8. File size check (&lt; 1KB = silently discard)
-9. Menu bar &rarr; "..." (Whisper)
-10. WhisperService transcribes via OpenAI API
-11. Menu bar &rarr; sparkles (Claude)
-12. ClaudeService enhances text
-13. PasteManager re-activates app + Cmd+V
-14. Menu bar &rarr; idle
-15. Temp file cleaned up</code></pre>
+            <pre><code> 1. User holds Option+S or Option+M
+ 2. HotkeyManager detects keyDown + maskAlternate
+ 3. SpeechCoordinator.didStartRecording(mode:)
+ 4. PasteManager saves frontmost app
+ 5. AudioRecorder starts M4A recording (16kHz mono)
+ 6. Menu bar icon &rarr; red mic
+ 7. User releases key
+ 8. HotkeyManager detects keyUp &rarr; didStopRecording
+ 9. AudioRecorder stops, returns temp file URL
+10. File size check: &lt; 1KB &rarr; silently discard
+11. Menu bar &rarr; "..." (Whisper processing)
+12. WhisperService transcribes via OpenAI API
+13. Menu bar &rarr; sparkles (Claude processing)
+14. ClaudeService enhances text
+15. PasteManager re-activates saved app + Cmd+V
+16. Menu bar &rarr; idle state
+17. AudioRecorder.cleanup() removes temp file</code></pre>
         </section>
 
         <!-- Error Handling -->
         <section id="errors">
             <h2>Error Handling</h2>
-            <p>All errors displayed via <code>UserNotifications</code> — no modal dialogs.</p>
+            <p>All errors displayed via <code>UNUserNotificationCenter</code> &mdash; no modal dialogs.</p>
+
+            <h3>Error Notifications</h3>
             <table>
                 <tr><th>Error</th><th>Notification</th><th>Fallback</th></tr>
                 <tr><td>Missing OpenAI Key</td><td>"OpenAI API Key fehlt"</td><td>Opens Settings</td></tr>
-                <tr><td>Missing Claude Key</td><td>"Claude API Key fehlt"</td><td>Pastes raw text</td></tr>
-                <tr><td>Whisper error</td><td>"Transkription fehlgeschlagen"</td><td>&mdash;</td></tr>
-                <tr><td>Claude error</td><td>"Textverbesserung fehlgeschlagen"</td><td>Pastes raw text</td></tr>
-                <tr><td>No mic permission</td><td>"Mikrofonzugriff verweigert"</td><td>&mdash;</td></tr>
-                <tr><td>No accessibility</td><td>"Bedienungshilfen-Zugriff erforderlich"</td><td>&mdash;</td></tr>
-                <tr><td>Recording failed</td><td>"Aufnahme fehlgeschlagen"</td><td>&mdash;</td></tr>
+                <tr><td>Missing Claude Key</td><td>"Claude API Key fehlt"</td><td>Pastes raw Whisper text</td></tr>
+                <tr><td>Whisper API error</td><td>"Transkription fehlgeschlagen"</td><td>&mdash;</td></tr>
+                <tr><td>Claude API error</td><td>"Textverbesserung fehlgeschlagen"</td><td>Pastes raw Whisper text</td></tr>
+                <tr><td>No microphone</td><td>"Mikrofonzugriff verweigert"</td><td>&mdash;</td></tr>
+                <tr><td>No accessibility</td><td>"Bedienungshilfen-Zugriff erforderlich"</td><td>Retries after 5s</td></tr>
+                <tr><td>Recording failed</td><td>"Aufnahme fehlgeschlagen"</td><td>Returns to idle</td></tr>
             </table>
 
             <h3>Edge Cases</h3>
             <table>
                 <tr><th>Case</th><th>Handling</th></tr>
-                <tr><td>Very short recording (&lt; 1KB)</td><td>Silently ignored</td></tr>
-                <tr><td>Concurrent hotkey press</td><td>Blocked by isProcessing flag</td></tr>
-                <tr><td>Control release without number</td><td>No action</td></tr>
-                <tr><td>Event tap timeout</td><td>Auto re-enable</td></tr>
+                <tr><td>Very short recording (&lt; 1KB)</td><td>Silently discarded</td></tr>
+                <tr><td>Concurrent hotkey during processing</td><td>Blocked by <code>isProcessing</code> flag</td></tr>
+                <tr><td>Option release without S/M</td><td>No action</td></tr>
+                <tr><td>Event tap timeout</td><td>Auto re-enabled</td></tr>
             </table>
         </section>
 
         <!-- Frameworks -->
         <section id="frameworks">
-            <h2>Frameworks Used</h2>
+            <h2>Apple Frameworks Used</h2>
             <table>
                 <tr><th>Framework</th><th>Purpose</th></tr>
                 <tr><td>SwiftUI</td><td>Settings panel UI</td></tr>
                 <tr><td>AppKit (Cocoa)</td><td>NSStatusItem, NSMenu, NSPasteboard, NSWorkspace</td></tr>
                 <tr><td>AVFoundation</td><td>AVAudioRecorder</td></tr>
-                <tr><td>Carbon.HIToolbox</td><td>Virtual key codes</td></tr>
-                <tr><td>Security</td><td>Keychain</td></tr>
-                <tr><td>ServiceManagement</td><td>Launch at Login (SMAppService)</td></tr>
-                <tr><td>UserNotifications</td><td>Error notifications</td></tr>
-                <tr><td>ApplicationServices</td><td>CGEventTap, CGEventPost</td></tr>
+                <tr><td>Carbon.HIToolbox</td><td>Virtual key codes (kVK_ANSI_S, kVK_ANSI_M)</td></tr>
+                <tr><td>Security</td><td>Keychain (SecItemAdd/CopyMatching/Delete)</td></tr>
+                <tr><td>ServiceManagement</td><td>SMAppService for launch at login</td></tr>
+                <tr><td>UserNotifications</td><td>UNUserNotificationCenter</td></tr>
+                <tr><td>ApplicationServices</td><td>CGEventTap, CGEventPost, AXIsProcessTrusted</td></tr>
             </table>
-            <p><strong>External dependencies: none.</strong> All functionality is built on Apple frameworks + URLSession.</p>
+            <p><strong>External dependencies: none.</strong></p>
         </section>
 
         <!-- Build -->
@@ -310,10 +355,9 @@
             <pre><code>git clone https://github.com/MINECUMN/SpeechToText.git
 cd SpeechToText
 open SpeechToText.xcodeproj
-# Xcode: Cmd+R</code></pre>
-            <p>Or via command line:</p>
+# In Xcode: Cmd+R</code></pre>
+            <p>Command line build:</p>
             <pre><code>xcodebuild -project SpeechToText.xcodeproj -scheme SpeechToText -configuration Debug build</code></pre>
-
             <h3>Build Settings</h3>
             <table>
                 <tr><th>Setting</th><th>Value</th></tr>
@@ -328,14 +372,38 @@ open SpeechToText.xcodeproj
         <!-- Export -->
         <section id="export">
             <h2>Export for Another Mac</h2>
-            <ol style="padding-left: 20px; font-size: 14px; line-height: 2;">
+            <ol>
                 <li>Open project in Xcode</li>
                 <li>Product &rarr; Archive</li>
                 <li>Distribute App &rarr; Copy App</li>
-                <li>Copy <code>SpeechToText.app</code> to target Mac</li>
+                <li>Copy <code>SpeechToText.app</code> to target Mac's <code>/Applications/</code></li>
                 <li>On first launch: grant Microphone + Accessibility</li>
-                <li>Open Settings &rarr; enter API keys</li>
+                <li>Menu bar icon &rarr; Settings &rarr; enter API keys</li>
             </ol>
+        </section>
+
+        <!-- Git History -->
+        <section id="history">
+            <h2>Git Commit History</h2>
+            <table>
+                <tr><th>Commit</th><th>Description</th></tr>
+                <tr><td>STEP 0</td><td>GitHub repo created, initial structure</td></tr>
+                <tr><td>STEP 1</td><td>Xcode project structure, all folders, targets, entitlements</td></tr>
+                <tr><td>STEP 2</td><td>HotkeyManager &mdash; CGEventTap with push-to-talk</td></tr>
+                <tr><td>STEP 3</td><td>AudioRecorder &mdash; AVAudioRecorder M4A 16kHz mono</td></tr>
+                <tr><td>STEP 4</td><td>WhisperService &mdash; OpenAI Whisper API multipart upload</td></tr>
+                <tr><td>STEP 5</td><td>ClaudeService &mdash; Anthropic API with both modes</td></tr>
+                <tr><td>STEP 6</td><td>PasteManager &mdash; focus preservation + Cmd+V</td></tr>
+                <tr><td>STEP 7</td><td>SettingsManager &mdash; Keychain + UserDefaults + SMAppService</td></tr>
+                <tr><td>STEP 8</td><td>SettingsView &mdash; SwiftUI settings panel</td></tr>
+                <tr><td>STEP 9</td><td>Menu Bar UI &mdash; NSStatusItem with 5 icon states</td></tr>
+                <tr><td>STEP 10</td><td>Full integration &mdash; end-to-end pipeline</td></tr>
+                <tr><td>STEP 11</td><td>Error handling &mdash; concurrent guard, notifications</td></tr>
+                <tr><td>STEP 12</td><td>Final documentation review</td></tr>
+                <tr><td>Fix</td><td>Swallow hotkey events, Accessibility docs</td></tr>
+                <tr><td>Fix</td><td>Hotkeys changed to Option+S / Option+M</td></tr>
+                <tr><td>Fix</td><td>Social Media prompt &mdash; no extra content, only cleanup + emojis</td></tr>
+            </table>
         </section>
 
         <!-- Limitations -->
@@ -343,18 +411,20 @@ open SpeechToText.xcodeproj
             <h2>Known Limitations</h2>
             <table>
                 <tr><th>Limitation</th><th>Details</th></tr>
-                <tr><td>Hardcoded hotkeys</td><td>Control+1 and Control+2 cannot be remapped at runtime</td></tr>
+                <tr><td>Fixed hotkeys</td><td>Option+S and Option+M not remappable at runtime</td></tr>
                 <tr><td>No audio visualization</td><td>No level meter during recording</td></tr>
                 <tr><td>Not sandboxed</td><td>CGEventTap requires non-sandboxed app</td></tr>
-                <tr><td>Requires internet</td><td>Both Whisper and Claude APIs are cloud-based</td></tr>
+                <tr><td>Internet required</td><td>Both APIs are cloud-based</td></tr>
                 <tr><td>Sequential pipeline</td><td>Cannot start new recording while processing</td></tr>
+                <tr><td>Dev permission reset</td><td>Accessibility resets after each Xcode rebuild</td></tr>
             </table>
         </section>
+
     </main>
 
     <footer>
-        <p>MINEC UG &mdash; SpeechToText Technical Documentation &mdash; Generated 2026-04-15</p>
-        <p><a href="https://github.com/MINECUMN/SpeechToText" style="color: var(--teal);">github.com/MINECUMN/SpeechToText</a></p>
+        <p>MINEC UG &mdash; SpeechToText Technical Documentation &mdash; 2026</p>
+        <p><a href="https://github.com/MINECUMN/SpeechToText">github.com/MINECUMN/SpeechToText</a></p>
     </footer>
 </body>
 </html>
