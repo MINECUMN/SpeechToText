@@ -7,13 +7,14 @@ A native macOS menu bar application providing push-to-talk speech-to-text with A
 Hold a hotkey, speak, release — your enhanced text gets pasted into the active application.
 
 ```
-Hold Option+S or Option+M → Speak → Release → Text appears in your active app
+Hold Option+S, Option+M or Option+E → Speak → Release → Text appears in your active app
 ```
 
 | Hotkey | Mode | What it does |
 |--------|------|-------------|
 | **Option+S** (hold) | Standard | Fixes grammar, removes filler words, improves readability |
-| **Option+M** (hold) | Social Media | Same cleanup + adds emojis naturally (no extra content added) |
+| **Option+M** (hold) | Social Media | Minimal cleanup + adds emojis naturally (no extra content added) |
+| **Option+E** (hold) | Email | Formats as professional email with greeting, body, closing sentence (no signature) |
 
 ## Requirements
 
@@ -139,10 +140,10 @@ SpeechToText/
 │   ├── SpeechToTextApp.swift      # @main entry, SpeechCoordinator (pipeline)
 │   └── AppDelegate.swift          # Menu bar UI, icon states, settings window
 ├── Core/
-│   ├── HotkeyManager.swift        # CGEventTap — Option+S / Option+M
+│   ├── HotkeyManager.swift        # CGEventTap — Option+S / Option+M / Option+E
 │   ├── AudioRecorder.swift        # AVAudioRecorder — M4A 16kHz mono
 │   ├── WhisperService.swift       # OpenAI Whisper API — multipart upload
-│   ├── ClaudeService.swift        # Claude API — Standard + Social Media
+│   ├── ClaudeService.swift        # Claude API — Standard + Social Media + Email
 │   └── PasteManager.swift         # Focus save → clipboard → Cmd+V paste
 ├── Settings/
 │   ├── SettingsManager.swift      # Keychain + UserDefaults singleton
@@ -155,7 +156,7 @@ SpeechToText/
 ### Pipeline Flow
 
 ```
-Option+S/M held → HotkeyManager detects
+Option+S/M/E held → HotkeyManager detects
   → PasteManager saves frontmost app
   → AudioRecorder starts recording
   → Key released
@@ -170,6 +171,7 @@ Option+S/M held → HotkeyManager detects
 |-------|------|---------|
 | Idle (Standard) | 🎤 | Ready — Option+S to record |
 | Idle (Social Media) | 🎤📱 | Ready — Option+M to record |
+| Idle (Email) | 🎤✉️ | Ready — Option+E to record |
 | Recording | 🔴 | Recording in progress |
 | Transcribing | ⋯ | Whisper API processing |
 | Enhancing | ✨ | Claude API processing |
@@ -199,7 +201,7 @@ All errors are shown as macOS notifications — no modal dialogs.
 
 ## Known Limitations
 
-- Hotkeys (Option+S / Option+M) are not remappable at runtime
+- Hotkeys (Option+S / Option+M / Option+E) are not remappable at runtime
 - No audio level visualization during recording
 - App is not sandboxed (required for CGEventTap global hotkeys)
 - Requires internet (both APIs are cloud-based)

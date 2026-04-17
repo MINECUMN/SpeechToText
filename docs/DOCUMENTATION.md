@@ -10,7 +10,7 @@
 | Xcode Requirement | 15.0+ |
 | Swift Version | 5.0+ |
 | External Dependencies | None |
-| Total Lines of Code | ~1,124 (9 Swift files) |
+| Total Lines of Code | ~1,195 (9 Swift files) |
 
 ---
 
@@ -18,15 +18,15 @@
 
 | File | Location | Purpose | Lines |
 |------|----------|---------|-------|
-| `SpeechToTextApp.swift` | App/ | @main entry point, `SpeechCoordinator` orchestrates the full pipeline | 214 |
-| `AppDelegate.swift` | App/ | `NSStatusItem` menu bar, `AppState` icon management, settings window | 157 |
-| `HotkeyManager.swift` | Core/ | `CGEventTap` for Option+S / Option+M push-to-talk | 150 |
+| `SpeechToTextApp.swift` | App/ | @main entry point, `SpeechCoordinator` orchestrates the full pipeline | 222 |
+| `AppDelegate.swift` | App/ | `NSStatusItem` menu bar, `AppState` icon management, settings window | 174 |
+| `HotkeyManager.swift` | Core/ | `CGEventTap` for Option+S / Option+M / Option+E push-to-talk | 154 |
 | `AudioRecorder.swift` | Core/ | `AVAudioRecorder` M4A 16kHz mono, temp file management | 52 |
 | `WhisperService.swift` | Core/ | OpenAI Whisper API multipart upload, transcription | 86 |
-| `ClaudeService.swift` | Core/ | Anthropic Claude API, Standard + Social Media modes | 90 |
+| `ClaudeService.swift` | Core/ | Anthropic Claude API, Standard + Social Media + Email modes | 116 |
 | `PasteManager.swift` | Core/ | Focus preservation, `NSPasteboard`, `CGEventPost` Cmd+V | 41 |
-| `SettingsManager.swift` | Settings/ | Singleton, Keychain API keys, UserDefaults, `SMAppService` | 129 |
-| `SettingsView.swift` | Settings/ | SwiftUI settings panel with all config options | 205 |
+| `SettingsManager.swift` | Settings/ | Singleton, Keychain API keys, UserDefaults, `SMAppService` | 134 |
+| `SettingsView.swift` | Settings/ | SwiftUI settings panel with all config options | 216 |
 
 ---
 
@@ -61,7 +61,10 @@
 > You are a text polishing assistant. The user has dictated a message via voice. Your task is to clean up the transcription: fix grammar, improve flow and readability, remove filler words and repetitions. Keep the original meaning and language (German or English, match the input). Keep the same tone and register. Output ONLY the improved text, nothing else.
 
 **Social Media Mode (Option+M):**
-> You are a text polishing assistant. The user has dictated a message via voice. Clean up the transcription: fix grammar, improve flow and readability, remove filler words and repetitions. Add exactly [N] emojis placed naturally throughout the text. IMPORTANT: Do NOT add any new content, ideas, sentences or information that the user did not say. Only clean up what was spoken and add emojis. Keep the original meaning, length and language (German or English, match the input). Output ONLY the improved text, nothing else.
+> Du bist ein minimaler Text-Bereiniger. Der Nutzer hat eine Nachricht per Sprache diktiert. Deine EINZIGEN Aufgaben: 1. Behebe offensichtliche Tipp- und Grammatikfehler. 2. Entferne Füllwörter (ähm, also, halt, sozusagen, basically, like, um). 3. Füge genau [N] Emojis passend im Text ein. STRIKTE REGELN — bei Verstoß ist die Ausgabe UNGÜLTIG: NIEMALS neue Sätze, Phrasen, Wörter oder Ideen hinzufügen. NIEMALS umformulieren, erweitern, ausschmücken oder verlängern. NIEMALS Hashtags, Call-to-Actions oder Fragen ergänzen. Die Anzahl der Sätze in der Ausgabe MUSS exakt der Anzahl im Input entsprechen. Dein Output darf NICHT länger sein als der Input (nur Emojis als Zusatz erlaubt). Sprache des Inputs beibehalten (Deutsch oder Englisch). Gib NUR den bereinigten Text mit Emojis aus, nichts anderes.
+
+**Email Mode (Option+E):**
+> Du bist ein E-Mail-Formatierungs-Assistent. Der Nutzer hat eine Nachricht per Sprache diktiert. Deine Aufgabe: 1. Korrigiere Rechtschreibung und Grammatik. 2. Formatiere den Text mit folgender Struktur: Anrede (z.B. "Sehr geehrte/r ...", "Liebe/r ...") als eigener Absatz, Hauptteil als neuer Absatz (bei längeren Texten in mehrere Absätze), ein abschließender Satz als Schlussphrase (z.B. "Ich freue mich auf Ihre Rückmeldung."). 3. Verwende eine weiche, freundliche Business-Sprache — professionell aber nicht steif. REGELN: KEINE Signatur, KEINE Grußformel wie "Mit freundlichen Grüßen", KEIN Name am Ende. Erfinde KEINE neuen Inhalte, Argumente oder Informationen. Verwende NUR das, was der Nutzer gesagt hat. Halte die Sprache des Inputs bei (Deutsch oder Englisch). Gib NUR die formatierte E-Mail aus, nichts anderes.
 
 ---
 
@@ -82,12 +85,15 @@ Both keys are stored in macOS Keychain under account name `apikey`.
 |--------|------|----------|----------|
 | Option+S | Standard | `kVK_ANSI_S` (1) | `.maskAlternate` (Option) |
 | Option+M | Social Media | `kVK_ANSI_M` (46) | `.maskAlternate` (Option) |
+| Option+E | Email | `kVK_ANSI_E` (14) | `.maskAlternate` (Option) |
 
 **Detection:** `CGEventTap` at `cgSessionEventTap` with `headInsertEventTap` placement. Events are swallowed (return `nil`) to prevent characters from reaching the active app.
 
 **Modifier filtering:** Only Option key accepted. Command and Control modifiers are explicitly rejected to avoid conflicts.
 
 **Release detection:** Key up event stops recording. Option key release (via `flagsChanged`) also stops recording as a safety fallback.
+
+**Modes:** Three `SpeechMode` cases: `.standard`, `.socialMedia`, `.email` — each triggers a different Claude system prompt.
 
 ---
 
@@ -134,7 +140,7 @@ The app calls `AXIsProcessTrustedWithOptions` with prompt option at startup. If 
 | SwiftUI | `import SwiftUI` | Settings panel UI |
 | AppKit | `import Cocoa` | NSStatusItem, NSMenu, NSPasteboard, NSWorkspace, NSWindow |
 | AVFoundation | `import AVFoundation` | AVAudioRecorder |
-| Carbon | `import Carbon.HIToolbox` | Virtual key codes (kVK_ANSI_S, kVK_ANSI_M) |
+| Carbon | `import Carbon.HIToolbox` | Virtual key codes (kVK_ANSI_S, kVK_ANSI_M, kVK_ANSI_E) |
 | Security | `import Security` | Keychain (SecItemAdd, SecItemCopyMatching, SecItemDelete) |
 | ServiceManagement | `import ServiceManagement` | SMAppService for launch at login |
 | UserNotifications | `import UserNotifications` | UNUserNotificationCenter |
@@ -152,13 +158,14 @@ The app calls `AXIsProcessTrustedWithOptions` with prompt option at startup. If 
 | `stt_launchAtLogin` | Bool | `false` | Auto-start with macOS |
 | `stt_standardHotkey` | String | `"Option+S"` | Display label |
 | `stt_socialMediaHotkey` | String | `"Option+M"` | Display label |
+| `stt_emailHotkey` | String | `"Option+E"` | Display label |
 
 ---
 
 ## End-to-End Pipeline
 
 ```
-1.  User holds Option+S or Option+M
+1.  User holds Option+S, Option+M or Option+E
 2.  HotkeyManager detects keyDown with maskAlternate flag
 3.  SpeechCoordinator.didStartRecording(mode:) called
 4.  PasteManager.saveFrontmostApp() captures active app
@@ -199,7 +206,7 @@ All errors displayed via `UNUserNotificationCenter` — no modal dialogs.
 |------|---------|
 | Very short recording (< 1KB) | Silently discarded |
 | Concurrent hotkey press during processing | Blocked by `isProcessing` flag |
-| Option key released without S/M | No action |
+| Option key released without S/M/E | No action |
 | Event tap timeout | Auto re-enabled |
 | App termination | Coordinator cleanup in `applicationWillTerminate` |
 
@@ -282,7 +289,7 @@ Uses `SMAppService.mainApp` (macOS 13+) to register as a login item.
 
 | Limitation | Details |
 |------------|---------|
-| Fixed hotkeys | Option+S and Option+M are not remappable at runtime |
+| Fixed hotkeys | Option+S, Option+M and Option+E are not remappable at runtime |
 | No audio visualization | No level meter during recording |
 | Not sandboxed | CGEventTap requires non-sandboxed app |
 | Internet required | Both Whisper and Claude APIs are cloud-based |
@@ -313,3 +320,6 @@ Uses `SMAppService.mainApp` (macOS 13+) to register as a login item.
 | Fix | Social Media prompt — only cleanup + emojis, no extra content |
 | Docs | Complete documentation rewrite with final hotkeys and prompts |
 | Fix | Export as standalone .app to /Applications, autostart configuration |
+| Feature | Add Email mode (Option+E), stricter Social Media prompt, Mac installation guide |
+| Fix | Email prompt — remove signature/greeting, improve paragraph structure |
+| Fix | Social Media prompt — German rewrite, stricter rules against added content |

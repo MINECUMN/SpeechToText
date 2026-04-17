@@ -27,13 +27,13 @@ open SpeechToText.xcodeproj
 HotkeyManager → AudioRecorder → WhisperService → ClaudeService → PasteManager
 ```
 
-- **HotkeyManager**: CGEventTap for global Option+S / Option+M push-to-talk (maskAlternate)
+- **HotkeyManager**: CGEventTap for global Option+S / Option+M / Option+E push-to-talk (maskAlternate)
 - **AudioRecorder**: AVAudioRecorder, M4A 16kHz mono, temp files
 - **WhisperService**: OpenAI `POST /v1/audio/transcriptions`, multipart upload
-- **ClaudeService**: Anthropic `POST /v1/messages`, model `claude-haiku-4-5-20251001`
+- **ClaudeService**: Anthropic `POST /v1/messages`, model `claude-haiku-4-5-20251001`, 3 modes (Standard/SocialMedia/Email)
 - **PasteManager**: Saves frontmost app → NSPasteboard → CGEventPost Cmd+V
 - **SettingsManager**: Singleton, Keychain for API keys, UserDefaults for prefs
-- **AppDelegate**: NSStatusItem with 5 icon states (idle/recording/whisper/claude per mode)
+- **AppDelegate**: NSStatusItem with 6 icon states (idle per mode/recording/whisper/claude)
 
 ## Key Constraints
 

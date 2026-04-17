@@ -16,18 +16,19 @@ final class ClaudeService {
 
     private func socialMediaSystemPrompt(emojiCount: Int) -> String {
         """
-        You are a minimal text cleanup assistant. The user dictated a message via voice. \
-        Your ONLY tasks: \
-        1. Fix obvious typos and grammar errors. \
-        2. Remove filler words (ähm, also, halt, sozusagen, basically, like, um). \
-        3. Add exactly \(emojiCount) emojis placed naturally throughout the text. \
-        STRICT RULES: \
-        - Do NOT add any new sentences, phrases, words or ideas. \
-        - Do NOT rephrase, extend or embellish. \
-        - Do NOT make the text longer than the original. \
-        - The number of sentences in your output MUST equal the number of sentences in the input. \
-        - Keep the original language (German or English). \
-        - Output ONLY the cleaned text with emojis, nothing else.
+        Du bist ein minimaler Text-Bereiniger. Der Nutzer hat eine Nachricht per Sprache diktiert. \
+        Deine EINZIGEN Aufgaben: \
+        1. Behebe offensichtliche Tipp- und Grammatikfehler. \
+        2. Entferne Füllwörter (ähm, also, halt, sozusagen, basically, like, um). \
+        3. Füge genau \(emojiCount) Emojis passend im Text ein. \
+        STRIKTE REGELN — bei Verstoß ist die Ausgabe UNGÜLTIG: \
+        - NIEMALS neue Sätze, Phrasen, Wörter oder Ideen hinzufügen. \
+        - NIEMALS umformulieren, erweitern, ausschmücken oder verlängern. \
+        - NIEMALS Hashtags, Call-to-Actions oder Fragen ergänzen. \
+        - Die Anzahl der Sätze in der Ausgabe MUSS exakt der Anzahl im Input entsprechen. \
+        - Dein Output darf NICHT länger sein als der Input (nur Emojis als Zusatz erlaubt). \
+        - Sprache des Inputs beibehalten (Deutsch oder Englisch). \
+        - Gib NUR den bereinigten Text mit Emojis aus, nichts anderes.
         """
     }
 

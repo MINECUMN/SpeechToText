@@ -141,7 +141,7 @@
                 <tr><td>Xcode Requirement</td><td>15.0+</td></tr>
                 <tr><td>Swift Version</td><td>5.0+</td></tr>
                 <tr><td>External Dependencies</td><td>None</td></tr>
-                <tr><td>Total Lines of Code</td><td>~1,124 (9 Swift files)</td></tr>
+                <tr><td>Total Lines of Code</td><td>~1,195 (9 Swift files)</td></tr>
             </table>
         </section>
 
@@ -150,15 +150,15 @@
             <h2>All Swift Files</h2>
             <table>
                 <tr><th>File</th><th>Location</th><th>Purpose</th><th>Lines</th></tr>
-                <tr><td><code>SpeechToTextApp.swift</code></td><td>App/</td><td>@main entry, SpeechCoordinator pipeline orchestration</td><td>214</td></tr>
-                <tr><td><code>AppDelegate.swift</code></td><td>App/</td><td>NSStatusItem menu bar, AppState icons, settings window</td><td>157</td></tr>
-                <tr><td><code>HotkeyManager.swift</code></td><td>Core/</td><td>CGEventTap for Option+S / Option+M push-to-talk</td><td>150</td></tr>
+                <tr><td><code>SpeechToTextApp.swift</code></td><td>App/</td><td>@main entry, SpeechCoordinator pipeline orchestration</td><td>222</td></tr>
+                <tr><td><code>AppDelegate.swift</code></td><td>App/</td><td>NSStatusItem menu bar, AppState icons, settings window</td><td>174</td></tr>
+                <tr><td><code>HotkeyManager.swift</code></td><td>Core/</td><td>CGEventTap for Option+S / Option+M / Option+E push-to-talk</td><td>154</td></tr>
                 <tr><td><code>AudioRecorder.swift</code></td><td>Core/</td><td>AVAudioRecorder M4A 16kHz mono</td><td>52</td></tr>
                 <tr><td><code>WhisperService.swift</code></td><td>Core/</td><td>OpenAI Whisper API multipart upload</td><td>86</td></tr>
-                <tr><td><code>ClaudeService.swift</code></td><td>Core/</td><td>Anthropic Claude API, Standard + Social Media</td><td>90</td></tr>
+                <tr><td><code>ClaudeService.swift</code></td><td>Core/</td><td>Anthropic Claude API, Standard + Social Media + Email</td><td>116</td></tr>
                 <tr><td><code>PasteManager.swift</code></td><td>Core/</td><td>Focus preservation + Cmd+V simulation</td><td>41</td></tr>
-                <tr><td><code>SettingsManager.swift</code></td><td>Settings/</td><td>Keychain + UserDefaults + SMAppService</td><td>129</td></tr>
-                <tr><td><code>SettingsView.swift</code></td><td>Settings/</td><td>SwiftUI settings panel</td><td>205</td></tr>
+                <tr><td><code>SettingsManager.swift</code></td><td>Settings/</td><td>Keychain + UserDefaults + SMAppService</td><td>134</td></tr>
+                <tr><td><code>SettingsView.swift</code></td><td>Settings/</td><td>SwiftUI settings panel</td><td>216</td></tr>
             </table>
         </section>
 
@@ -169,6 +169,7 @@
                 <tr><th>Hotkey</th><th>Mode</th><th>Key Code</th><th>Modifier</th></tr>
                 <tr><td><strong>Option+S</strong></td><td>Standard</td><td><code>kVK_ANSI_S</code> (1)</td><td><code>.maskAlternate</code></td></tr>
                 <tr><td><strong>Option+M</strong></td><td>Social Media</td><td><code>kVK_ANSI_M</code> (46)</td><td><code>.maskAlternate</code></td></tr>
+                <tr><td><strong>Option+E</strong></td><td>Email</td><td><code>kVK_ANSI_E</code> (14)</td><td><code>.maskAlternate</code></td></tr>
             </table>
             <p><strong>Detection:</strong> <code>CGEventTap</code> at <code>cgSessionEventTap</code> with <code>headInsertEventTap</code>. Events are swallowed (return <code>nil</code>) to prevent characters reaching the active app.</p>
             <p><strong>Modifier filtering:</strong> Only Option key. Command and Control are rejected to avoid conflicts.</p>
@@ -219,9 +220,14 @@
 
             <h3>Social Media Mode (Option+M)</h3>
             <div class="callout">
-                You are a text polishing assistant. The user has dictated a message via voice. Clean up the transcription: fix grammar, improve flow and readability, remove filler words and repetitions. Add exactly [N] emojis placed naturally throughout the text. <strong>IMPORTANT: Do NOT add any new content, ideas, sentences or information that the user did not say.</strong> Only clean up what was spoken and add emojis. Keep the original meaning, length and language (German or English, match the input). Output ONLY the improved text, nothing else.
+                Du bist ein minimaler Text-Bereiniger. Der Nutzer hat eine Nachricht per Sprache diktiert. Deine EINZIGEN Aufgaben: 1. Behebe offensichtliche Tipp- und Grammatikfehler. 2. Entferne Füllwörter. 3. Füge genau [N] Emojis passend im Text ein. <strong>STRIKTE REGELN — bei Verstoß ist die Ausgabe UNGÜLTIG:</strong> NIEMALS neue Sätze, Phrasen, Wörter oder Ideen hinzufügen. NIEMALS umformulieren, erweitern, ausschmücken oder verlängern. NIEMALS Hashtags, Call-to-Actions oder Fragen ergänzen. Die Anzahl der Sätze MUSS exakt der Anzahl im Input entsprechen. Output darf NICHT länger als Input sein (nur Emojis als Zusatz erlaubt). Gib NUR den bereinigten Text mit Emojis aus.
             </div>
             <p>The emoji count [N] is configurable in Settings (default: 3, range: 1&ndash;20).</p>
+
+            <h3>Email Mode (Option+E)</h3>
+            <div class="callout">
+                Du bist ein E-Mail-Formatierungs-Assistent. Der Nutzer hat eine Nachricht per Sprache diktiert. Korrigiere Rechtschreibung und Grammatik. Formatiere den Text mit Struktur: Anrede als eigener Absatz, Hauptteil als neuer Absatz, ein abschließender Satz als Schlussphrase. Verwende eine weiche, freundliche Business-Sprache. <strong>REGELN:</strong> KEINE Signatur, KEINE Grußformel wie "Mit freundlichen Grüßen", KEIN Name am Ende. Erfinde KEINE neuen Inhalte. Verwende NUR das, was der Nutzer gesagt hat. Gib NUR die formatierte E-Mail aus.
+            </div>
         </section>
 
         <!-- Permissions -->
@@ -270,6 +276,7 @@
                 <tr><td><code>stt_launchAtLogin</code></td><td>Bool</td><td><code>false</code></td><td>Auto-start with macOS</td></tr>
                 <tr><td><code>stt_standardHotkey</code></td><td>String</td><td><code>"Option+S"</code></td><td>Display label</td></tr>
                 <tr><td><code>stt_socialMediaHotkey</code></td><td>String</td><td><code>"Option+M"</code></td><td>Display label</td></tr>
+                <tr><td><code>stt_emailHotkey</code></td><td>String</td><td><code>"Option+E"</code></td><td>Display label</td></tr>
             </table>
 
             <h3>Menu Bar Icon States</h3>
@@ -277,6 +284,7 @@
                 <tr><th>State</th><th>SF Symbol</th><th>Indicator</th></tr>
                 <tr><td>Idle Standard</td><td><code>mic</code></td><td>&mdash;</td></tr>
                 <tr><td>Idle Social Media</td><td><code>mic</code></td><td>Phone emoji</td></tr>
+                <tr><td>Idle Email</td><td><code>mic</code></td><td>Envelope emoji</td></tr>
                 <tr><td>Recording</td><td><code>mic.fill</code> (red tinted)</td><td>&mdash;</td></tr>
                 <tr><td>Transcribing</td><td><code>ellipsis.circle</code></td><td>"..."</td></tr>
                 <tr><td>Enhancing</td><td><code>sparkles</code></td><td>Sparkles</td></tr>
@@ -286,7 +294,7 @@
         <!-- Pipeline -->
         <section id="pipeline">
             <h2>End-to-End Pipeline</h2>
-            <pre><code> 1. User holds Option+S or Option+M
+            <pre><code> 1. User holds Option+S, Option+M or Option+E
  2. HotkeyManager detects keyDown + maskAlternate
  3. SpeechCoordinator.didStartRecording(mode:)
  4. PasteManager saves frontmost app
@@ -327,7 +335,7 @@
                 <tr><th>Case</th><th>Handling</th></tr>
                 <tr><td>Very short recording (&lt; 1KB)</td><td>Silently discarded</td></tr>
                 <tr><td>Concurrent hotkey during processing</td><td>Blocked by <code>isProcessing</code> flag</td></tr>
-                <tr><td>Option release without S/M</td><td>No action</td></tr>
+                <tr><td>Option release without S/M/E</td><td>No action</td></tr>
                 <tr><td>Event tap timeout</td><td>Auto re-enabled</td></tr>
             </table>
         </section>
@@ -340,7 +348,7 @@
                 <tr><td>SwiftUI</td><td>Settings panel UI</td></tr>
                 <tr><td>AppKit (Cocoa)</td><td>NSStatusItem, NSMenu, NSPasteboard, NSWorkspace</td></tr>
                 <tr><td>AVFoundation</td><td>AVAudioRecorder</td></tr>
-                <tr><td>Carbon.HIToolbox</td><td>Virtual key codes (kVK_ANSI_S, kVK_ANSI_M)</td></tr>
+                <tr><td>Carbon.HIToolbox</td><td>Virtual key codes (kVK_ANSI_S, kVK_ANSI_M, kVK_ANSI_E)</td></tr>
                 <tr><td>Security</td><td>Keychain (SecItemAdd/CopyMatching/Delete)</td></tr>
                 <tr><td>ServiceManagement</td><td>SMAppService for launch at login</td></tr>
                 <tr><td>UserNotifications</td><td>UNUserNotificationCenter</td></tr>
@@ -432,6 +440,9 @@ open /Applications/SpeechToText.app</code></pre>
                 <tr><td>Fix</td><td>Social Media prompt &mdash; no extra content, only cleanup + emojis</td></tr>
                 <tr><td>Docs</td><td>Complete documentation rewrite with final hotkeys and prompts</td></tr>
                 <tr><td>Fix</td><td>Export as standalone .app to /Applications, autostart config</td></tr>
+                <tr><td>Feature</td><td>Add Email mode (Option+E), stricter Social Media prompt, Mac installation guide</td></tr>
+                <tr><td>Fix</td><td>Email prompt &mdash; remove signature/greeting, improve paragraph structure</td></tr>
+                <tr><td>Fix</td><td>Social Media prompt &mdash; German rewrite, stricter rules against added content</td></tr>
             </table>
         </section>
 
@@ -440,7 +451,7 @@ open /Applications/SpeechToText.app</code></pre>
             <h2>Known Limitations</h2>
             <table>
                 <tr><th>Limitation</th><th>Details</th></tr>
-                <tr><td>Fixed hotkeys</td><td>Option+S and Option+M not remappable at runtime</td></tr>
+                <tr><td>Fixed hotkeys</td><td>Option+S, Option+M and Option+E not remappable at runtime</td></tr>
                 <tr><td>No audio visualization</td><td>No level meter during recording</td></tr>
                 <tr><td>Not sandboxed</td><td>CGEventTap requires non-sandboxed app</td></tr>
                 <tr><td>Internet required</td><td>Both APIs are cloud-based</td></tr>
