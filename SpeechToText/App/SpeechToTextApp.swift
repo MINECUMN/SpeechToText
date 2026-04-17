@@ -46,7 +46,7 @@ final class SpeechCoordinator: HotkeyManagerDelegate {
         } else {
             sendNotification(
                 title: "SpeechToText bereit",
-                body: "\u{2325}S = Standard \u{00B7} \u{2325}M = Social Media"
+                body: "\u{2325}S = Standard \u{00B7} \u{2325}M = Social Media \u{00B7} \u{2325}E = Email"
             )
         }
 
@@ -106,13 +106,13 @@ final class SpeechCoordinator: HotkeyManagerDelegate {
             try audioRecorder.startRecording()
         } catch {
             sendNotification(title: "Aufnahme fehlgeschlagen", body: error.localizedDescription)
-            appDelegate?.updateState(mode == .standard ? .idleStandard : .idleSocialMedia)
+            appDelegate?.updateState(idleState(for: mode))
         }
     }
 
     func hotkeyManager(_ manager: HotkeyManager, didStopRecordingForMode mode: SpeechMode) {
         guard let audioURL = audioRecorder.stopRecording() else {
-            appDelegate?.updateState(mode == .standard ? .idleStandard : .idleSocialMedia)
+            appDelegate?.updateState(idleState(for: mode))
             return
         }
 
@@ -120,7 +120,7 @@ final class SpeechCoordinator: HotkeyManagerDelegate {
         let fileSize = (try? FileManager.default.attributesOfItem(atPath: audioURL.path)[.size] as? Int) ?? 0
         if fileSize < 1000 {
             audioRecorder.cleanup()
-            appDelegate?.updateState(mode == .standard ? .idleStandard : .idleSocialMedia)
+            appDelegate?.updateState(idleState(for: mode))
             return
         }
 
@@ -133,13 +133,21 @@ final class SpeechCoordinator: HotkeyManagerDelegate {
         }
     }
 
+    private func idleState(for mode: SpeechMode) -> AppState {
+        switch mode {
+        case .standard: return .idleStandard
+        case .socialMedia: return .idleSocialMedia
+        case .email: return .idleEmail
+        }
+    }
+
     // MARK: - Processing Pipeline
 
     private func processAudio(url: URL, mode: SpeechMode) async {
         defer {
             audioRecorder.cleanup()
             DispatchQueue.main.async { [weak self] in
-                self?.appDelegate?.updateState(mode == .standard ? .idleStandard : .idleSocialMedia)
+                self?.appDelegate?.updateState(self?.idleState(for: mode) ?? .idleStandard)
             }
         }
 

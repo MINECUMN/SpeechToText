@@ -16,14 +16,36 @@ final class ClaudeService {
 
     private func socialMediaSystemPrompt(emojiCount: Int) -> String {
         """
-        You are a text polishing assistant. The user has dictated a message via voice. \
-        Clean up the transcription: fix grammar, improve flow and readability, remove filler words \
-        and repetitions. Add exactly \(emojiCount) emojis placed naturally throughout the text. \
-        IMPORTANT: Do NOT add any new content, ideas, sentences or information that the user did not say. \
-        Only clean up what was spoken and add emojis. Keep the original meaning, length and language \
-        (German or English, match the input). Output ONLY the improved text, nothing else.
+        You are a minimal text cleanup assistant. The user dictated a message via voice. \
+        Your ONLY tasks: \
+        1. Fix obvious typos and grammar errors. \
+        2. Remove filler words (ähm, also, halt, sozusagen, basically, like, um). \
+        3. Add exactly \(emojiCount) emojis placed naturally throughout the text. \
+        STRICT RULES: \
+        - Do NOT add any new sentences, phrases, words or ideas. \
+        - Do NOT rephrase, extend or embellish. \
+        - Do NOT make the text longer than the original. \
+        - The number of sentences in your output MUST equal the number of sentences in the input. \
+        - Keep the original language (German or English). \
+        - Output ONLY the cleaned text with emojis, nothing else.
         """
     }
+
+    private let emailSystemPrompt = """
+        Du bist ein E-Mail-Formatierungs-Assistent. Der Nutzer hat eine Nachricht per Sprache diktiert. \
+        Deine Aufgabe: \
+        1. Korrigiere Rechtschreibung und Grammatik. \
+        2. Formatiere den Text als professionelle E-Mail mit klarer Struktur: \
+           - Anrede (z.B. "Sehr geehrte/r ...", "Liebe/r ...") \
+           - Hauptteil in sinnvollen Absätzen \
+           - Verabschiedung (z.B. "Mit freundlichen Grüßen", "Beste Grüße") \
+        3. Verwende eine weiche, freundliche Business-Sprache — professionell aber nicht steif. \
+        REGELN: \
+        - Erfinde KEINE neuen Inhalte, Argumente oder Informationen. \
+        - Verwende NUR das, was der Nutzer gesagt hat. \
+        - Halte die Sprache des Inputs bei (Deutsch oder Englisch). \
+        - Gib NUR die formatierte E-Mail aus, nichts anderes.
+        """
 
     func enhance(text: String, mode: SpeechMode, apiKey: String, emojiCount: Int = 3) async throws -> String {
         let systemPrompt: String
@@ -32,6 +54,8 @@ final class ClaudeService {
             systemPrompt = standardSystemPrompt
         case .socialMedia:
             systemPrompt = socialMediaSystemPrompt(emojiCount: emojiCount)
+        case .email:
+            systemPrompt = emailSystemPrompt
         }
 
         let requestBody: [String: Any] = [

@@ -150,6 +150,17 @@ struct SettingsView: View {
                     .cornerRadius(4)
             }
 
+            HStack {
+                Text("Email Mode:")
+                    .frame(width: 140, alignment: .leading)
+                Text(settings.emailHotkeyLabel)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.secondary.opacity(0.1))
+                    .cornerRadius(4)
+            }
+
             Text("Hold the hotkey to record, release to process and paste.")
                 .font(.caption)
                 .foregroundColor(.secondary)

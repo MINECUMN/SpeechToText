@@ -34,6 +34,10 @@ final class SettingsManager: ObservableObject {
         didSet { UserDefaults.standard.set(socialMediaHotkeyLabel, forKey: "stt_socialMediaHotkey") }
     }
 
+    @Published var emailHotkeyLabel: String {
+        didSet { UserDefaults.standard.set(emailHotkeyLabel, forKey: "stt_emailHotkey") }
+    }
+
     // MARK: - Init
 
     private init() {
@@ -42,6 +46,7 @@ final class SettingsManager: ObservableObject {
         self.launchAtLogin = UserDefaults.standard.bool(forKey: "stt_launchAtLogin")
         self.standardHotkeyLabel = UserDefaults.standard.string(forKey: "stt_standardHotkey") ?? "Option+S"
         self.socialMediaHotkeyLabel = UserDefaults.standard.string(forKey: "stt_socialMediaHotkey") ?? "Option+M"
+        self.emailHotkeyLabel = UserDefaults.standard.string(forKey: "stt_emailHotkey") ?? "Option+E"
     }
 
     // MARK: - Keychain API Keys

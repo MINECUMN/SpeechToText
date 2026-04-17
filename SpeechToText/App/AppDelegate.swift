@@ -4,6 +4,7 @@ import SwiftUI
 enum AppState {
     case idleStandard
     case idleSocialMedia
+    case idleEmail
     case recording
     case processingWhisper
     case processingClaude
@@ -19,6 +20,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Menu items that need updating
     private var standardModeItem: NSMenuItem!
     private var socialMediaModeItem: NSMenuItem!
+    private var emailModeItem: NSMenuItem!
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         setupMenuBar()
@@ -45,6 +47,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         socialMediaModeItem = NSMenuItem(title: "Social Media Mode (⌥M)", action: #selector(selectSocialMediaMode), keyEquivalent: "")
         socialMediaModeItem.target = self
         menu.addItem(socialMediaModeItem)
+
+        emailModeItem = NSMenuItem(title: "Email Mode (⌥E)", action: #selector(selectEmailMode), keyEquivalent: "")
+        emailModeItem.target = self
+        menu.addItem(emailModeItem)
 
         menu.addItem(NSMenuItem.separator())
 
@@ -77,6 +83,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             appState = .idleStandard
         case .socialMedia:
             appState = .idleSocialMedia
+        case .email:
+            appState = .idleEmail
         }
         DispatchQueue.main.async { [weak self] in
             self?.updateStatusIcon()
@@ -97,6 +105,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         case .idleSocialMedia:
             button.image = NSImage(systemSymbolName: "mic", accessibilityDescription: "SpeechToText - Social Media Mode")
             button.title = " \u{1F4F1}" // emoji indicator
+
+        case .idleEmail:
+            button.image = NSImage(systemSymbolName: "mic", accessibilityDescription: "SpeechToText - Email Mode")
+            button.title = " \u{2709}\u{FE0F}" // envelope indicator
 
         case .recording:
             button.image = NSImage(systemSymbolName: "mic.fill", accessibilityDescription: "Recording...")
@@ -120,6 +132,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     private func updateModeCheckmarks() {
         standardModeItem?.state = (currentMode == .standard) ? .on : .off
         socialMediaModeItem?.state = (currentMode == .socialMedia) ? .on : .off
+        emailModeItem?.state = (currentMode == .email) ? .on : .off
     }
 
     // MARK: - Actions
@@ -130,6 +143,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     @objc private func selectSocialMediaMode() {
         setCurrentMode(.socialMedia)
+    }
+
+    @objc private func selectEmailMode() {
+        setCurrentMode(.email)
     }
 
     @objc func openSettings() {

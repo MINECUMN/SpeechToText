@@ -4,6 +4,7 @@ import Carbon.HIToolbox
 enum SpeechMode {
     case standard
     case socialMedia
+    case email
 }
 
 protocol HotkeyManagerDelegate: AnyObject {
@@ -19,9 +20,10 @@ final class HotkeyManager {
     fileprivate var isRecording = false
     fileprivate var activeMode: SpeechMode?
 
-    // Option+S = Standard Mode, Option+M = Social Media Mode
+    // Option+S = Standard Mode, Option+M = Social Media Mode, Option+E = Email Mode
     fileprivate let standardKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_S)    // 1
     fileprivate let socialMediaKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_M) // 46
+    fileprivate let emailKeyCode: CGKeyCode = CGKeyCode(kVK_ANSI_E)       // 14
 
     func start() -> Bool {
         let eventMask: CGEventMask = (1 << CGEventType.keyDown.rawValue)
@@ -73,6 +75,8 @@ final class HotkeyManager {
             mode = .standard
         } else if keyCode == socialMediaKeyCode {
             mode = .socialMedia
+        } else if keyCode == emailKeyCode {
+            mode = .email
         } else {
             return false
         }
@@ -91,7 +95,7 @@ final class HotkeyManager {
     /// Returns true if the event was handled and should be swallowed
     fileprivate func handleKeyUp(keyCode: CGKeyCode) -> Bool {
         guard isRecording else { return false }
-        guard keyCode == standardKeyCode || keyCode == socialMediaKeyCode else { return false }
+        guard keyCode == standardKeyCode || keyCode == socialMediaKeyCode || keyCode == emailKeyCode else { return false }
 
         let mode = activeMode ?? .standard
         isRecording = false
